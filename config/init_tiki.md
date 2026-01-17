@@ -55,7 +55,7 @@ A built-in `tiki` command displays a nice Scrum/Kanban board and a searchable Ba
 
 ## AI native
 
-since they are simple **Markdown** files they can also be easily manipulated via AI. For example, you can 
+since they are simple **Markdown** files they can also be easily manipulated via AI. For example, you can
 use Claude Code with skills to search, create, view, update and delete `tikis`
 
 > hey Claude show me a tiki TIKI-m7n2xk
