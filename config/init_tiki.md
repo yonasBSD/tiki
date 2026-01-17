@@ -27,21 +27,24 @@ check it out: https://github.com/boolean-maybe/tiki
 
 `tikis` (short for tickets) are just **Markdown** files in your repository
 
-🌳 /projects/my-app
-├─ 📁 .doc
-│  └─ 📁 tiki
-│     ├─ 📝 tiki-k3x9m2.md
-│     ├─ 📝 tiki-7wq4na.md
-│     ├─ 📝 tiki-p8j1fz.md
-│     └─ 📝 tiki-5r2bvh.md
-├─ 📁 src
-│  ├─ 📁 components
-│  │  ├─ 📜 Header.tsx
-│  │  ├─ 📜 Footer.tsx
-│  │  └─ 📝 README.md
-├─ 📝 README.md
-├─ 📋 package.json
-└─ 📄 LICENSE
+```
+/projects/my-app
+├── .doc/
+│   └── tiki/
+│       ├── tiki-k3x9m2.md
+│       ├── tiki-7wq4na.md
+│       ├── tiki-p8j1fz.md
+│       └── tiki-5r2bvh.md
+├── src/
+│   ├── components/
+│   │   ├── Header.tsx
+│   │   ├── Footer.tsx
+│   │   └── README.md
+│   └── ...
+├── README.md
+├── package.json
+└── LICENSE
+```
 
 ## Built-in terminal UI
 
