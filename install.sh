@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 set -euo pipefail
 
 repo_owner="boolean-maybe"
@@ -59,7 +59,8 @@ case "$arch" in
 esac
 
 api_url="https://api.github.com/repos/$repo_owner/$repo_name/releases/latest"
-tag="$(fetch "$api_url" | grep -m1 '"tag_name"' | sed -E 's/.*"tag_name": *"([^"]+)".*/\1/')"
+response="$(fetch "$api_url")"
+tag="$(printf '%s' "$response" | grep -m1 '"tag_name"' | sed -E 's/.*"tag_name": *"([^"]+)".*/\1/')"
 if [ -z "$tag" ]; then
   say "failed to resolve latest release tag"
   exit 1
