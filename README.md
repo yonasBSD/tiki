@@ -38,6 +38,28 @@ and simply copy the `tiki` executable to any location and make it available via 
 tiki --version
 ```
 
+## Terminal Requirements
+
+`tiki` CLI tool works best with modern terminal emulators that support:
+- **TrueColor (24-bit color)** for gradient rendering
+- **UTF-8 encoding** for proper character display
+- Standard ANSI escape sequences
+
+### Recommended Terminals
+- **macOS**: iTerm2, kitty, Alacritty, or default Terminal.app
+- **Linux**: kitty, Alacritty, GNOME Terminal, Konsole, or any xterm-256color compatible terminal
+- **Windows**: Windows Terminal, ConEmu, or Alacritty
+
+### Terminal Configuration
+For best results, ensure your terminal is set to:
+- TERM environment variable: `xterm-256color` or better (e.g., `xterm-truecolor`)
+- UTF-8 encoding enabled
+
+If colors don't display correctly, try setting:
+```bash
+export TERM=xterm-256color
+```
+
 ## Quick start
 
 `cd` into your **git** repo and run `tiki`.
