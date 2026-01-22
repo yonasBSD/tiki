@@ -133,6 +133,40 @@ func gradientFromPrimaryColor(primary tcell.Color, fallback config.Gradient) con
 	}
 }
 
+const (
+	useVibrantPluginGradient = true
+	// increase this to get vibrance boost
+	vibrantBoost = 2.6
+)
+
+// pluginCaptionGradient selects the gradient derivation for plugin captions.
+func pluginCaptionGradient(primary tcell.Color, fallback config.Gradient) config.Gradient {
+	if useVibrantPluginGradient {
+		return gradientFromPrimaryColorVibrant(primary, fallback)
+	}
+	return gradientFromPrimaryColor(primary, fallback)
+}
+
+// gradientFromPrimaryColorVibrant derives a brighter gradient without desaturating.
+func gradientFromPrimaryColorVibrant(primary tcell.Color, fallback config.Gradient) config.Gradient {
+	if primary == tcell.ColorDefault || !primary.Valid() {
+		return fallback
+	}
+
+	r, g, b := primary.TrueColor().RGB()
+	base := [3]int{int(r), int(g), int(b)}
+	edge := [3]int{
+		clampRGB(int(float64(base[0]) * vibrantBoost)),
+		clampRGB(int(float64(base[1]) * vibrantBoost)),
+		clampRGB(int(float64(base[2]) * vibrantBoost)),
+	}
+
+	return config.Gradient{
+		Start: base,
+		End:   edge,
+	}
+}
+
 func lightenRGB(rgb [3]int, ratio float64) [3]int {
 	return [3]int{
 		clampRGB(int(float64(rgb[0]) + (255.0-float64(rgb[0]))*ratio)),
