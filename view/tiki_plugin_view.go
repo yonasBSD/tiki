@@ -58,7 +58,7 @@ func (pv *PluginView) build() {
 	if pv.pluginDef.Foreground != tcell.ColorDefault {
 		textColor = pv.pluginDef.Foreground
 	}
-	titleGradient := gradientFromPrimaryColor(pv.pluginDef.Background, config.GetColors().BoardPaneTitleGradient)
+	titleGradient := pluginCaptionGradient(pv.pluginDef.Background, config.GetColors().BoardPaneTitleGradient)
 	paneNames := make([]string, len(pv.pluginDef.Panes))
 	for i, pane := range pv.pluginDef.Panes {
 		paneNames[i] = pane.Name
@@ -106,15 +106,21 @@ func (pv *PluginView) refresh() {
 	if viewMode == model.ViewModeExpanded {
 		itemHeight = config.TaskBoxHeightExpanded
 	}
-	pv.panes.Clear()
-	pv.paneBoxes = pv.paneBoxes[:0]
-
 	selectedPane := pv.pluginConfig.GetSelectedPane()
 
+	if len(pv.paneBoxes) != len(pv.pluginDef.Panes) {
+		pv.paneBoxes = make([]*ScrollableList, 0, len(pv.pluginDef.Panes))
+		for range pv.pluginDef.Panes {
+			pv.paneBoxes = append(pv.paneBoxes, NewScrollableList())
+		}
+	}
+
+	pv.panes.Clear()
+
 	for paneIdx := range pv.pluginDef.Panes {
-		// task container for this pane
-		paneContainer := NewScrollableList().SetItemHeight(itemHeight)
-		pv.paneBoxes = append(pv.paneBoxes, paneContainer)
+		paneContainer := pv.paneBoxes[paneIdx]
+		paneContainer.SetItemHeight(itemHeight)
+		paneContainer.Clear()
 
 		isSelectedPane := paneIdx == selectedPane
 		pv.panes.AddItem(paneContainer, 0, 1, isSelectedPane)
@@ -131,12 +137,6 @@ func (pv *PluginView) refresh() {
 		columns := pv.pluginConfig.GetColumnsForPane(paneIdx)
 		selectedIndex := pv.pluginConfig.GetSelectedIndexForPane(paneIdx)
 		selectedRow := selectedIndex / columns
-
-		if isSelectedPane {
-			paneContainer.SetSelection(selectedRow)
-		} else {
-			paneContainer.SetSelection(-1)
-		}
 
 		numRows := (len(tasks) + columns - 1) / columns
 		for row := 0; row < numRows; row++ {
@@ -159,6 +159,12 @@ func (pv *PluginView) refresh() {
 				}
 			}
 			paneContainer.AddItem(rowFlex)
+		}
+
+		if isSelectedPane {
+			paneContainer.SetSelection(selectedRow)
+		} else {
+			paneContainer.SetSelection(-1)
 		}
 	}
 }
