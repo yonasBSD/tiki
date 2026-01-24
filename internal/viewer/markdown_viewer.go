@@ -3,13 +3,18 @@ package viewer
 import (
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/boolean-maybe/navidown/loaders"
 	nav "github.com/boolean-maybe/navidown/navidown"
 	navtview "github.com/boolean-maybe/navidown/navidown/tview"
 	navutil "github.com/boolean-maybe/navidown/util"
 	"github.com/boolean-maybe/tiki/config"
+	"github.com/boolean-maybe/tiki/util"
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
@@ -55,7 +60,57 @@ func Run(input InputSpec) error {
 		v.SetMarkdownWithSource(content, resolveSourcePath(elem, input.SearchRoots), true)
 	})
 
-	app.SetRoot(viewer, true).EnableMouse(false)
+	// create status bar
+	statusBar := tview.NewTextView()
+	statusBar.SetDynamicColors(true)
+	statusBar.SetTextAlign(tview.AlignLeft)
+
+	viewer.SetStateChangedHandler(func(v *navtview.TextViewViewer) {
+		updateStatusBar(statusBar, v)
+	})
+
+	// initial status bar update
+	updateStatusBar(statusBar, viewer)
+
+	// create flex layout with status bar
+	flex := tview.NewFlex().
+		SetDirection(tview.FlexRow).
+		AddItem(viewer, 0, 1, true).
+		AddItem(statusBar, 1, 0, false)
+
+	// key handlers
+	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		switch event.Rune() {
+		case 'q':
+			app.Stop()
+			return nil
+		case 'e':
+			srcPath := viewer.Core().SourceFilePath()
+			if srcPath == "" || strings.HasPrefix(srcPath, "http://") || strings.HasPrefix(srcPath, "https://") {
+				return nil
+			}
+			var editorErr error
+			app.Suspend(func() {
+				editorErr = util.OpenInEditor(srcPath)
+			})
+			if editorErr != nil {
+				slog.Error("failed to open editor", "file", srcPath, "error", editorErr)
+				return nil
+			}
+			// reload content after editor exits successfully
+			data, err := os.ReadFile(srcPath)
+			if err != nil {
+				slog.Error("failed to reload file after edit", "file", srcPath, "error", err)
+				return nil
+			}
+			viewer.SetMarkdownWithSource(string(data), srcPath, false)
+			updateStatusBar(statusBar, viewer)
+			return nil
+		}
+		return event
+	})
+
+	app.SetRoot(flex, true).EnableMouse(false)
 	if err := app.Run(); err != nil {
 		return fmt.Errorf("viewer error: %w", err)
 	}
@@ -122,4 +177,35 @@ func resolveSourcePath(elem nav.NavElement, searchRoots []string) string {
 
 func formatErrorContent(err error) string {
 	return "# Error\n\n```\n" + err.Error() + "\n```"
+}
+
+// updateStatusBar refreshes the status bar with current viewer state.
+func updateStatusBar(statusBar *tview.TextView, v *navtview.TextViewViewer) {
+	core := v.Core()
+	srcPath := core.SourceFilePath()
+	fileName := filepath.Base(srcPath)
+	if fileName == "" || fileName == "." {
+		fileName = "tiki"
+	}
+
+	canBack := core.CanGoBack()
+	canForward := core.CanGoForward()
+
+	keyColor := "gray"
+	activeColor := "white"
+	status := fmt.Sprintf(" [yellow]%s[-] | Link:[%s]Tab/Shift-Tab[-] | Back:", fileName, keyColor)
+	if canBack {
+		status += fmt.Sprintf("[%s]◀[-]", activeColor)
+	} else {
+		status += "[gray]◀[-]"
+	}
+	status += " Fwd:"
+	if canForward {
+		status += fmt.Sprintf("[%s]▶[-]", activeColor)
+	} else {
+		status += "[gray]▶[-]"
+	}
+	status += fmt.Sprintf(" | Scroll:[%s]j/k[-] Top/End:[%s]g/G[-] Edit:[%s]e[-] Quit:[%s]q[-]", keyColor, keyColor, keyColor, keyColor)
+
+	statusBar.SetText(status)
 }
