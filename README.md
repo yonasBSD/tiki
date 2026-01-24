@@ -4,10 +4,20 @@
 
 ![Intro](assets/intro.png)
 
-Software development and AI assisted development in particular leaves a lot of Markdown files around - project management, 
-documentation, brainstorming ideas, incomplete implementations, AI prompts and plans and what not. 
-Stick them in your repo. Keep around for as long as you need. Find them back in **git** history. Make tasks out of them
-and take them through an agile lifecycle
+Markdown is the new go-to format for everything, it's simple, efficient, human and AI native - project management, 
+documentation, brainstorming ideas, incomplete implementations, AI prompts and plans and what not are saved as Markdown files. 
+Stick them in your repo. Keep around for as long as you need. Find them back in **git** history. Make issues out of them
+and take them through an agile lifecycle. `tiki` helps you save and organize these files:
+
+- Standalone Markdown viewer - view and edit Markdown files, navigate to local/external/GitHub/GitLab links, edit and save
+- Keep, search, view and version Markdown files in the git repo
+- Wiki-style documentation with multiple entry points
+- Keep a to-do list with priorities, status, assignee and size
+- Issue management with Kanban/Scrum style board and burndown chart
+- User-defined plugins with filters and actions like Backlog, Recent, Roadmap
+- AI skills to enable [Claude Code](https://code.claude.com), [Codex](https://openai.com/codex), [Opencode](https://opencode.ai) work with natural language commands like
+  "create a tiki from @my-file.md"
+  "mark tiki ABC123 as complete"
 
 ## Installation
 
@@ -61,6 +71,15 @@ export TERM=xterm-256color
 ```
 
 ## Quick start
+
+### Markdown viewer
+
+`tiki my-markdownfile` to view, edit and navigate markdown files in terminal.
+All vim-like pager commands are supported in addition to:
+- `Tab/Enter` to select and load a link in the document
+- `e` to edit it in your favorite editor
+
+### File and issue management
 
 `cd` into your **git** repo and run `tiki`.
 Move your tiki around the board with `Shift ←/Shift →`.
