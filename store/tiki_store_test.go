@@ -78,8 +78,8 @@ title: Whitespace Test
 
 Body with leading newline`,
 			expectedFrontmatter: `title: Whitespace Test`,
-			expectedBody: "\nBody with leading newline",
-			expectError:  false,
+			expectedBody:        "\nBody with leading newline",
+			expectError:         false,
 		},
 	}
 

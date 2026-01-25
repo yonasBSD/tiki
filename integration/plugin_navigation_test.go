@@ -665,7 +665,7 @@ func TestPluginEsc_ComplexDrillDown(t *testing.T) {
 
 	// Stack: Kanban→Roadmap(replace)→TaskDetail(push)→TaskEdit(push)
 	ta.NavController.PushView(model.MakePluginViewID("Kanban"), nil)
-	ta.SendKey(tcell.KeyF2, 0, tcell.ModNone)     // Roadmap (replaces, depth stays 1)
+	ta.SendKey(tcell.KeyF4, 0, tcell.ModNone)     // Roadmap (replaces, depth stays 1)
 	ta.SendKey(tcell.KeyEnter, 0, tcell.ModNone)  // TaskDetail (pushes, depth 2)
 	ta.SendKey(tcell.KeyRune, 'e', tcell.ModNone) // TaskEdit (pushes, depth 3)
 
