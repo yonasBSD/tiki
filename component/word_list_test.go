@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/boolean-maybe/tiki/config"
 	"github.com/gdamore/tcell/v2"
 )
 
@@ -19,12 +20,14 @@ func TestNewWordList(t *testing.T) {
 		t.Errorf("Expected words %v, got %v", words, wl.words)
 	}
 
-	if wl.fgColor != tcell.ColorCornflowerBlue {
-		t.Errorf("Expected fg color CornflowerBlue, got %v", wl.fgColor)
+	// colors should come from config
+	colors := config.GetColors()
+	if wl.fgColor != colors.TaskDetailTagForeground {
+		t.Errorf("Expected fg color from config, got %v", wl.fgColor)
 	}
 
-	if wl.bgColor != tcell.ColorNavy {
-		t.Errorf("Expected bg color Navy, got %v", wl.bgColor)
+	if wl.bgColor != colors.TaskDetailTagBackground {
+		t.Errorf("Expected bg color from config, got %v", wl.bgColor)
 	}
 }
 

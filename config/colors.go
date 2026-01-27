@@ -47,6 +47,8 @@ type ColorConfig struct {
 	TaskDetailEditDimValueColor string // tview color string like "[#909090]"
 	TaskDetailEditFocusMarker   string // tview color string like "[yellow]"
 	TaskDetailEditFocusText     string // tview color string like "[white]"
+	TaskDetailTagForeground     tcell.Color
+	TaskDetailTagBackground     tcell.Color
 
 	// Search box colors
 	SearchBoxLabelColor      tcell.Color
@@ -56,6 +58,9 @@ type ColorConfig struct {
 	// Input field colors (used in task detail edit mode)
 	InputFieldBackgroundColor tcell.Color
 	InputFieldTextColor       tcell.Color
+
+	// Completion prompt colors
+	CompletionHintColor tcell.Color
 
 	// Burndown chart colors
 	BurndownChartAxisColor     tcell.Color
@@ -125,11 +130,13 @@ func DefaultColors() *ColorConfig {
 		TaskDetailLabelText:         "[green]",
 		TaskDetailValueText:         "[#8c92ac]",
 		TaskDetailCommentAuthor:     "[yellow]",
-		TaskDetailEditDimTextColor:  "[#808080]", // Medium gray for dim text
-		TaskDetailEditDimLabelColor: "[#606060]", // Darker gray for dim labels
-		TaskDetailEditDimValueColor: "[#909090]", // Lighter gray for dim values
-		TaskDetailEditFocusMarker:   "[yellow]",  // Yellow arrow for focus
-		TaskDetailEditFocusText:     "[white]",   // White text after arrow
+		TaskDetailEditDimTextColor:  "[#808080]",                      // Medium gray for dim text
+		TaskDetailEditDimLabelColor: "[#606060]",                      // Darker gray for dim labels
+		TaskDetailEditDimValueColor: "[#909090]",                      // Lighter gray for dim values
+		TaskDetailEditFocusMarker:   "[yellow]",                       // Yellow arrow for focus
+		TaskDetailEditFocusText:     "[white]",                        // White text after arrow
+		TaskDetailTagForeground:     tcell.NewRGBColor(180, 200, 220), // Light blue-gray text
+		TaskDetailTagBackground:     tcell.NewRGBColor(40, 60, 100),   // Dark blue background (more bluish)
 
 		// Search box
 		SearchBoxLabelColor:      tcell.ColorWhite,
@@ -139,6 +146,9 @@ func DefaultColors() *ColorConfig {
 		// Input field colors
 		InputFieldBackgroundColor: tcell.ColorDefault, // Transparent
 		InputFieldTextColor:       tcell.ColorWhite,
+
+		// Completion prompt
+		CompletionHintColor: tcell.NewRGBColor(128, 128, 128), // Medium gray for hint text
 
 		// Burndown chart
 		BurndownChartAxisColor:  tcell.NewRGBColor(80, 80, 80),    // Dark gray
