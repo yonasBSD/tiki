@@ -1,6 +1,7 @@
 package barchart
 
 import (
+	"github.com/boolean-maybe/tiki/config"
 	"github.com/boolean-maybe/tiki/util/gradient"
 	"github.com/gdamore/tcell/v2"
 )
@@ -39,6 +40,11 @@ func barFillColor(bar Bar, row, total int, theme Theme) tcell.Color {
 	}
 	if total <= 1 {
 		return theme.BarColor
+	}
+
+	// Use adaptive gradient: solid color when gradients disabled
+	if !config.UseGradients {
+		return config.FallbackBurndownColor
 	}
 
 	t := float64(row) / float64(total-1)

@@ -3,6 +3,7 @@ package barchart
 import (
 	"testing"
 
+	"github.com/boolean-maybe/tiki/config"
 	"github.com/boolean-maybe/tiki/util/gradient"
 	"github.com/gdamore/tcell/v2"
 )
@@ -60,6 +61,9 @@ func TestInterpolateRGB(t *testing.T) {
 }
 
 func TestBarFillColorPrefersCustom(t *testing.T) {
+	// Enable gradients for this test
+	config.UseGradients = true
+
 	theme := DefaultTheme()
 	bar := Bar{
 		Value:    10,

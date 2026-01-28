@@ -295,3 +295,102 @@ func TestInterpolateColor(t *testing.T) {
 			r, g, b)
 	}
 }
+
+func TestRenderAdaptiveGradientText(t *testing.T) {
+	gradient := config.Gradient{
+		Start: [3]int{30, 144, 255}, // Dodger Blue
+		End:   [3]int{0, 191, 255},  // Deep Sky Blue
+	}
+	fallback := tcell.NewRGBColor(0, 191, 255) // Deep Sky Blue
+
+	tests := []struct {
+		name         string
+		text         string
+		useGradients bool
+		checkSolid   bool // If true, verify result is a solid color
+	}{
+		{
+			name:         "empty string with gradients enabled",
+			text:         "",
+			useGradients: true,
+			checkSolid:   false,
+		},
+		{
+			name:         "empty string with gradients disabled",
+			text:         "",
+			useGradients: false,
+			checkSolid:   false,
+		},
+		{
+			name:         "gradients enabled renders full gradient",
+			text:         "TIKI-123",
+			useGradients: true,
+			checkSolid:   false,
+		},
+		{
+			name:         "gradients disabled renders solid color",
+			text:         "TIKI-123",
+			useGradients: false,
+			checkSolid:   true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Set gradient flag
+			config.UseGradients = tt.useGradients
+
+			got := RenderAdaptiveGradientText(tt.text, gradient, fallback)
+
+			// Empty string should return empty
+			if tt.text == "" {
+				if got != "" {
+					t.Errorf("Expected empty result for empty text, got %q", got)
+				}
+				return
+			}
+
+			// Check if we got a solid color when gradients disabled
+			if tt.checkSolid {
+				// Solid color format: [#rrggbb]text
+				// Should not have multiple color codes
+				expected := "[#00bfff]" + tt.text // Deep Sky Blue fallback
+				if got != expected {
+					t.Errorf("Expected solid color %q, got %q", expected, got)
+				}
+			} else if tt.useGradients {
+				// When gradients enabled, should have multiple color codes
+				// Check that result contains the text and color codes
+				if len(got) <= len(tt.text) {
+					t.Errorf("Expected gradient text longer than input, got %q", got)
+				}
+			}
+		})
+	}
+}
+
+func TestAdaptiveGradientRespectConfig(t *testing.T) {
+	gradient := config.Gradient{
+		Start: [3]int{100, 100, 100},
+		End:   [3]int{200, 200, 200},
+	}
+	fallback := tcell.NewRGBColor(200, 200, 200)
+	text := "Test"
+
+	// Test toggle behavior
+	config.UseGradients = true
+	resultWithGradients := RenderAdaptiveGradientText(text, gradient, fallback)
+
+	config.UseGradients = false
+	resultWithoutGradients := RenderAdaptiveGradientText(text, gradient, fallback)
+
+	// Results should be different
+	if resultWithGradients == resultWithoutGradients {
+		t.Errorf("Expected different results when UseGradients changes, both returned: %q", resultWithGradients)
+	}
+
+	// Without gradients should be shorter (single color code)
+	if len(resultWithoutGradients) >= len(resultWithGradients) {
+		t.Errorf("Expected solid color result to be shorter than gradient result")
+	}
+}

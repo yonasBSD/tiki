@@ -38,7 +38,8 @@ type Config struct {
 
 	// Appearance configuration
 	Appearance struct {
-		Theme string `mapstructure:"theme"` // "dark", "light", "auto"
+		Theme             string `mapstructure:"theme"`             // "dark", "light", "auto"
+		GradientThreshold int    `mapstructure:"gradientThreshold"` // Minimum color count for gradients (16, 256, 16777216)
 	} `mapstructure:"appearance"`
 }
 
@@ -110,6 +111,7 @@ func setDefaults() {
 
 	// Appearance defaults
 	viper.SetDefault("appearance.theme", "auto")
+	viper.SetDefault("appearance.gradientThreshold", 256)
 }
 
 // bindFlags binds supported command line flags to viper so they can override config values.
@@ -304,4 +306,14 @@ func GetContentTextColor() tcell.Color {
 		return tcell.ColorWhite
 	}
 	return tcell.ColorBlack
+}
+
+// GetGradientThreshold returns the minimum color count required for gradients
+// Valid values: 16, 256, 16777216 (truecolor)
+func GetGradientThreshold() int {
+	threshold := viper.GetInt("appearance.gradientThreshold")
+	if threshold < 1 {
+		return 256 // fallback to default
+	}
+	return threshold
 }

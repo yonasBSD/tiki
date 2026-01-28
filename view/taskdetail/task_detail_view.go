@@ -154,7 +154,7 @@ func (tv *TaskDetailView) buildHeader(task *taskpkg.Task, colors *config.ColorCo
 	headerContainer.AddItem(mainRow, 0, 1, false)
 
 	headerFrame := tview.NewFrame(headerContainer).SetBorders(0, 0, 0, 0, 0, 0)
-	headerFrame.SetBorder(true).SetTitle(fmt.Sprintf(" %s ", gradient.RenderGradientText(task.ID, colors.TaskDetailIDColor))).SetBorderColor(colors.TaskBoxUnselectedBorder)
+	headerFrame.SetBorder(true).SetTitle(fmt.Sprintf(" %s ", gradient.RenderAdaptiveGradientText(task.ID, colors.TaskDetailIDColor, config.FallbackTaskIDColor))).SetBorderColor(colors.TaskBoxUnselectedBorder)
 	headerFrame.SetBorderPadding(1, 0, 2, 2)
 
 	return headerFrame

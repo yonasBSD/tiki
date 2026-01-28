@@ -58,7 +58,16 @@ func (gcr *GradientCaptionRow) Draw(screen tcell.Screen) {
 				distanceFromCenter = -distanceFromCenter
 			}
 		}
-		bgColor := gradient.InterpolateColor(gcr.gradient, distanceFromCenter)
+
+		// Use adaptive gradient: solid color when wide gradients disabled
+		// Wide gradients show visible banding on 256-color terminals
+		var bgColor tcell.Color
+		if config.UseWideGradients {
+			bgColor = gradient.InterpolateColor(gcr.gradient, distanceFromCenter)
+		} else {
+			// Use the gradient's start color as fallback to preserve plugin identity
+			bgColor = gradient.InterpolateColor(gcr.gradient, 0.0)
+		}
 
 		// Determine which pane this position belongs to
 		paneIndex := col / paneWidth

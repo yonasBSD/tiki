@@ -192,6 +192,26 @@ func DefaultColors() *ColorConfig {
 var globalColors *ColorConfig
 var colorsInitialized bool
 
+// UseGradients controls whether gradients are rendered or solid colors are used
+// Set during bootstrap based on terminal color count vs gradientThreshold
+var UseGradients bool
+
+// UseWideGradients controls whether screen-wide gradients (like caption rows) are rendered
+// Screen-wide gradients show more banding on 256-color terminals, so require truecolor
+var UseWideGradients bool
+
+// Fallback solid colors for gradient scenarios (used when UseGradients = false)
+var (
+	// Board/pane title fallback: Royal Blue (end of gradient)
+	FallbackTitleColor = tcell.NewRGBColor(65, 105, 225)
+	// Task ID fallback: Deep Sky Blue (end of gradient)
+	FallbackTaskIDColor = tcell.NewRGBColor(0, 191, 255)
+	// Burndown chart fallback: Purple (start of gradient)
+	FallbackBurndownColor = tcell.NewRGBColor(134, 90, 214)
+	// Caption row fallback: Midpoint of Midnight Blue to Royal Blue
+	FallbackCaptionColor = tcell.NewRGBColor(45, 65, 169)
+)
+
 // GetColors returns the global color configuration with theme-aware overrides
 func GetColors() *ColorConfig {
 	if !colorsInitialized {

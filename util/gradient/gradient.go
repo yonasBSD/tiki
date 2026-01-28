@@ -81,6 +81,23 @@ func RenderGradientText(text string, gradient config.Gradient) string {
 	return builder.String()
 }
 
+// RenderAdaptiveGradientText renders text with gradient or solid color based on config.UseGradients.
+// When gradients are disabled, uses the gradient's end color as a solid color fallback.
+func RenderAdaptiveGradientText(text string, gradient config.Gradient, fallbackColor tcell.Color) string {
+	if len(text) == 0 {
+		return ""
+	}
+
+	if !config.UseGradients {
+		// Use solid fallback color
+		r, g, b := fallbackColor.RGB()
+		return fmt.Sprintf("[#%02x%02x%02x]%s", r, g, b, text)
+	}
+
+	// Render full gradient
+	return RenderGradientText(text, gradient)
+}
+
 // GradientFromColor derives a gradient by lightening the base color.
 func GradientFromColor(primary tcell.Color, ratio float64, fallback config.Gradient) config.Gradient {
 	r, g, b := primary.RGB()
