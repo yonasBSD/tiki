@@ -3,7 +3,7 @@
 First of all, you just navigated to a linked file. To go back press `Left` arrow or `Alt-Left`
 To go forward press `Right` arrow or `Alt-Right`
 
-tiki cli app is much like a lego - other than Board everything else is a customizable view. Here is, for example,
+tiki TUI app is much like a lego - everything is a customizable view. Here is, for example,
 how Backlog is defined:
 
 ```text
@@ -25,7 +25,7 @@ You define the name, caption colors, hotkey, tiki filter and sorting. Save this 
             - file: my-plugin.yaml
 ```
 
-to the `config.yaml` file in the directory where tiki cli is installed
+to the `config.yaml` file in the config directory
 
 Likewise the documentation is just a plugin:
 
