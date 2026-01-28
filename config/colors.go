@@ -47,6 +47,8 @@ type ColorConfig struct {
 	TaskDetailEditDimValueColor string // tview color string like "[#909090]"
 	TaskDetailEditFocusMarker   string // tview color string like "[yellow]"
 	TaskDetailEditFocusText     string // tview color string like "[white]"
+	TaskDetailTagForeground     tcell.Color
+	TaskDetailTagBackground     tcell.Color
 
 	// Search box colors
 	SearchBoxLabelColor      tcell.Color
@@ -56,6 +58,9 @@ type ColorConfig struct {
 	// Input field colors (used in task detail edit mode)
 	InputFieldBackgroundColor tcell.Color
 	InputFieldTextColor       tcell.Color
+
+	// Completion prompt colors
+	CompletionHintColor tcell.Color
 
 	// Burndown chart colors
 	BurndownChartAxisColor     tcell.Color
@@ -72,6 +77,14 @@ type ColorConfig struct {
 	HeaderInfoValue  string // tview color string like "[white]"
 	HeaderKeyBinding string // tview color string like "[yellow]"
 	HeaderKeyText    string // tview color string like "[white]"
+
+	// Header context help action colors
+	HeaderActionGlobalKeyColor   string // tview color string for global action keys
+	HeaderActionGlobalLabelColor string // tview color string for global action labels
+	HeaderActionPluginKeyColor   string // tview color string for plugin action keys
+	HeaderActionPluginLabelColor string // tview color string for plugin action labels
+	HeaderActionViewKeyColor     string // tview color string for view action keys
+	HeaderActionViewLabelColor   string // tview color string for view action labels
 }
 
 // DefaultColors returns the default color configuration
@@ -117,11 +130,13 @@ func DefaultColors() *ColorConfig {
 		TaskDetailLabelText:         "[green]",
 		TaskDetailValueText:         "[#8c92ac]",
 		TaskDetailCommentAuthor:     "[yellow]",
-		TaskDetailEditDimTextColor:  "[#808080]", // Medium gray for dim text
-		TaskDetailEditDimLabelColor: "[#606060]", // Darker gray for dim labels
-		TaskDetailEditDimValueColor: "[#909090]", // Lighter gray for dim values
-		TaskDetailEditFocusMarker:   "[yellow]",  // Yellow arrow for focus
-		TaskDetailEditFocusText:     "[white]",   // White text after arrow
+		TaskDetailEditDimTextColor:  "[#808080]",                      // Medium gray for dim text
+		TaskDetailEditDimLabelColor: "[#606060]",                      // Darker gray for dim labels
+		TaskDetailEditDimValueColor: "[#909090]",                      // Lighter gray for dim values
+		TaskDetailEditFocusMarker:   "[yellow]",                       // Yellow arrow for focus
+		TaskDetailEditFocusText:     "[white]",                        // White text after arrow
+		TaskDetailTagForeground:     tcell.NewRGBColor(180, 200, 220), // Light blue-gray text
+		TaskDetailTagBackground:     tcell.NewRGBColor(40, 60, 100),   // Dark blue background (more bluish)
 
 		// Search box
 		SearchBoxLabelColor:      tcell.ColorWhite,
@@ -131,6 +146,9 @@ func DefaultColors() *ColorConfig {
 		// Input field colors
 		InputFieldBackgroundColor: tcell.ColorDefault, // Transparent
 		InputFieldTextColor:       tcell.ColorWhite,
+
+		// Completion prompt
+		CompletionHintColor: tcell.NewRGBColor(128, 128, 128), // Medium gray for hint text
 
 		// Burndown chart
 		BurndownChartAxisColor:  tcell.NewRGBColor(80, 80, 80),    // Dark gray
@@ -159,12 +177,40 @@ func DefaultColors() *ColorConfig {
 		HeaderInfoValue:  "[#cccccc]",
 		HeaderKeyBinding: "[yellow]",
 		HeaderKeyText:    "[white]",
+
+		// Header context help actions
+		HeaderActionGlobalKeyColor:   "#ffff00", // yellow for global actions
+		HeaderActionGlobalLabelColor: "#ffffff", // white for global action labels
+		HeaderActionPluginKeyColor:   "#ff8c00", // orange for plugin actions
+		HeaderActionPluginLabelColor: "#b0b0b0", // light gray for plugin labels
+		HeaderActionViewKeyColor:     "#5fafff", // cyan for view-specific actions
+		HeaderActionViewLabelColor:   "#808080", // gray for view-specific labels
 	}
 }
 
 // Global color config instance
 var globalColors *ColorConfig
 var colorsInitialized bool
+
+// UseGradients controls whether gradients are rendered or solid colors are used
+// Set during bootstrap based on terminal color count vs gradientThreshold
+var UseGradients bool
+
+// UseWideGradients controls whether screen-wide gradients (like caption rows) are rendered
+// Screen-wide gradients show more banding on 256-color terminals, so require truecolor
+var UseWideGradients bool
+
+// Fallback solid colors for gradient scenarios (used when UseGradients = false)
+var (
+	// Board/pane title fallback: Royal Blue (end of gradient)
+	FallbackTitleColor = tcell.NewRGBColor(65, 105, 225)
+	// Task ID fallback: Deep Sky Blue (end of gradient)
+	FallbackTaskIDColor = tcell.NewRGBColor(0, 191, 255)
+	// Burndown chart fallback: Purple (start of gradient)
+	FallbackBurndownColor = tcell.NewRGBColor(134, 90, 214)
+	// Caption row fallback: Midpoint of Midnight Blue to Royal Blue
+	FallbackCaptionColor = tcell.NewRGBColor(45, 65, 169)
+)
 
 // GetColors returns the global color configuration with theme-aware overrides
 func GetColors() *ColorConfig {

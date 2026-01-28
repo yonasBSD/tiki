@@ -28,10 +28,11 @@ func NewCompletionPrompt(words []string) *CompletionPrompt {
 	inputField.SetFieldBackgroundColor(config.GetContentBackgroundColor())
 	inputField.SetFieldTextColor(config.GetContentTextColor())
 
+	colors := config.GetColors()
 	cp := &CompletionPrompt{
 		InputField: inputField,
 		words:      words,
-		hintColor:  tcell.ColorGray,
+		hintColor:  colors.CompletionHintColor,
 	}
 
 	return cp

@@ -11,6 +11,7 @@ import (
 	"github.com/boolean-maybe/tiki/internal/app"
 	"github.com/boolean-maybe/tiki/internal/bootstrap"
 	"github.com/boolean-maybe/tiki/internal/viewer"
+	"github.com/boolean-maybe/tiki/util/sysinfo"
 )
 
 //go:embed ai/skills/tiki/SKILL.md
@@ -26,6 +27,15 @@ func main() {
 		fmt.Printf("tiki version %s\ncommit: %s\nbuilt: %s\n",
 			config.Version, config.GitCommit, config.BuildDate)
 		os.Exit(0)
+	}
+
+	// Handle sysinfo command
+	if len(os.Args) > 1 && os.Args[1] == "sysinfo" {
+		if err := runSysInfo(); err != nil {
+			_, _ = fmt.Fprintln(os.Stderr, "error:", err)
+			os.Exit(1)
+		}
+		return
 	}
 
 	// Initialize paths early - this must succeed for the application to function
@@ -63,6 +73,21 @@ func main() {
 		return
 	}
 
+	// Initialize gradient support based on terminal color capabilities
+	threshold := config.GetGradientThreshold()
+	// System information is available in result.SystemInfo for adjusting visual appearance
+	if result.SystemInfo.ColorCount < threshold {
+		config.UseGradients = false
+		config.UseWideGradients = false
+		slog.Debug("gradients disabled", "colorCount", result.SystemInfo.ColorCount, "threshold", threshold)
+	} else {
+		config.UseGradients = true
+		// Wide gradients (caption rows) require truecolor to avoid visible banding
+		// 256-color terminals show noticeable banding on screen-wide gradients
+		config.UseWideGradients = result.SystemInfo.ColorCount >= 16777216
+		slog.Debug("gradients enabled", "colorCount", result.SystemInfo.ColorCount, "threshold", threshold, "wideGradients", config.UseWideGradients)
+	}
+
 	// Cleanup on exit
 	defer result.App.Stop()
 	defer result.HeaderWidget.Cleanup()
@@ -82,4 +107,19 @@ func main() {
 
 	// Keep logLevel variable referenced so it isn't optimized away in some builds
 	_ = result.LogLevel
+}
+
+// runSysInfo handles the sysinfo command, displaying system and terminal environment information.
+func runSysInfo() error {
+	// Initialize paths first (needed for ConfigDir, CacheDir)
+	if err := config.InitPaths(); err != nil {
+		return fmt.Errorf("initialize paths: %w", err)
+	}
+
+	info := sysinfo.NewSystemInfo()
+
+	// Print formatted system information
+	fmt.Print(info.String())
+
+	return nil
 }

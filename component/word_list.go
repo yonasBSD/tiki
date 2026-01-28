@@ -22,11 +22,12 @@ type WordList struct {
 func NewWordList(words []string) *WordList {
 	box := tview.NewBox()
 	box.SetBorder(false) // No visible border
+	colors := config.GetColors()
 	return &WordList{
 		Box:     box,
 		words:   words,
-		fgColor: tcell.ColorCornflowerBlue, // Soft Cobalt
-		bgColor: tcell.ColorNavy,
+		fgColor: colors.TaskDetailTagForeground,
+		bgColor: colors.TaskDetailTagBackground,
 	}
 }
 
