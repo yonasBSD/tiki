@@ -222,7 +222,7 @@ func (pc *PluginController) HandleSearch(query string) {
 	// Search across all tasks; pane membership is decided per pane
 	results := pc.taskStore.Search(query, nil)
 	if len(results) == 0 {
-		pc.pluginConfig.ClearSearchResults()
+		pc.pluginConfig.SetSearchResults([]task.SearchResult{}, query)
 		return
 	}
 

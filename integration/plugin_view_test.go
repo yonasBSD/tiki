@@ -299,6 +299,59 @@ func TestPluginView_Search(t *testing.T) {
 	}
 }
 
+// TestPluginView_SearchNoResults verifies search with no matches shows empty results
+func TestPluginView_SearchNoResults(t *testing.T) {
+	ta := testutil.NewTestApp(t)
+	defer ta.Cleanup()
+
+	if err := ta.LoadPlugins(); err != nil {
+		t.Fatalf("Failed to load plugins: %v", err)
+	}
+
+	// Create a single task
+	if err := testutil.CreateTestTask(ta.TaskDir, "TIKI-1", "First Task", taskpkg.StatusReady, taskpkg.TypeStory); err != nil {
+		t.Fatalf("failed to create task: %v", err)
+	}
+	if err := ta.TaskStore.Reload(); err != nil {
+		t.Fatalf("failed to reload: %v", err)
+	}
+
+	// Navigate to plugin view
+	ta.NavController.PushView(model.MakePluginViewID("Kanban"), nil)
+	ta.Draw()
+
+	// Verify task is visible before search
+	foundBefore, _, _ := ta.FindText("TIKI-1")
+	if !foundBefore {
+		ta.DumpScreen()
+		t.Fatalf("TIKI-1 should be visible before search")
+	}
+
+	// Start search
+	ta.SendKey(tcell.KeyRune, '/', tcell.ModNone)
+
+	// Type non-matching search query
+	ta.SendText("xyznonexistent")
+	ta.SendKey(tcell.KeyEnter, 0, tcell.ModNone)
+
+	// Verify task is NOT visible after no-match search
+	foundAfter, _, _ := ta.FindText("TIKI-1")
+	if foundAfter {
+		ta.DumpScreen()
+		t.Errorf("TIKI-1 should NOT be visible after no-match search")
+	}
+
+	// Press Escape to clear search
+	ta.SendKey(tcell.KeyEscape, 0, tcell.ModNone)
+
+	// Verify task reappears
+	foundCleared, _, _ := ta.FindText("TIKI-1")
+	if !foundCleared {
+		ta.DumpScreen()
+		t.Errorf("TIKI-1 should reappear after clearing search")
+	}
+}
+
 // TestPluginView_EmptyPlugin verifies plugin view with no matching tasks
 func TestPluginView_EmptyPlugin(t *testing.T) {
 	ta := testutil.NewTestApp(t)

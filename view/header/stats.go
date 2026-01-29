@@ -47,6 +47,7 @@ func NewStatsWidget() *StatsWidget {
 	tv := tview.NewTextView()
 	tv.SetDynamicColors(true)
 	tv.SetTextAlign(tview.AlignLeft)
+	tv.SetWrap(false)
 
 	sw := &StatsWidget{
 		TextView: tv,
