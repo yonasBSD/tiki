@@ -136,7 +136,7 @@ func DefaultColors() *ColorConfig {
 		TaskDetailEditFocusMarker:   "[yellow]",                       // Yellow arrow for focus
 		TaskDetailEditFocusText:     "[white]",                        // White text after arrow
 		TaskDetailTagForeground:     tcell.NewRGBColor(180, 200, 220), // Light blue-gray text
-		TaskDetailTagBackground:     tcell.NewRGBColor(40, 60, 100),   // Dark blue background (more bluish)
+		TaskDetailTagBackground:     tcell.NewRGBColor(30, 50, 120),   // Dark blue background (more bluish)
 
 		// Search box
 		SearchBoxLabelColor:      tcell.ColorWhite,

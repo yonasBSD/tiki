@@ -3,6 +3,7 @@ package bootstrap
 import (
 	"context"
 	"log/slog"
+	"os"
 
 	"github.com/rivo/tview"
 
@@ -71,6 +72,21 @@ func Bootstrap(tikiSkillContent, dokiSkillContent string) (*BootstrapResult, err
 		"theme", systemInfo.DetectedTheme,
 		"color_support", systemInfo.ColorSupport,
 		"color_count", systemInfo.ColorCount)
+
+	// Auto-correct TERM if insufficient color support detected
+	// This commonly happens in Docker containers or minimal environments
+	if systemInfo.ColorCount < 256 && systemInfo.TermType != "" {
+		slog.Info("limited color support detected, upgrading TERM for better experience",
+			"original_term", systemInfo.TermType,
+			"original_colors", systemInfo.ColorCount,
+			"new_term", "xterm-256color")
+		os.Setenv("TERM", "xterm-256color")
+		// Re-collect system info to get updated color capabilities
+		systemInfo = sysinfo.NewSystemInfo()
+		slog.Debug("updated system information after TERM correction",
+			"color_support", systemInfo.ColorSupport,
+			"color_count", systemInfo.ColorCount)
+	}
 
 	// Phase 3: Project initialization
 	proceed, err := EnsureProjectInitialized(tikiSkillContent, dokiSkillContent)

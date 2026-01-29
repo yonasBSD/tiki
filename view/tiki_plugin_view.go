@@ -61,12 +61,11 @@ func (pv *PluginView) build() {
 	if pv.pluginDef.Foreground != tcell.ColorDefault {
 		textColor = pv.pluginDef.Foreground
 	}
-	titleGradient := pluginCaptionGradient(pv.pluginDef.Background, config.GetColors().BoardPaneTitleGradient)
 	paneNames := make([]string, len(pv.pluginDef.Panes))
 	for i, pane := range pv.pluginDef.Panes {
 		paneNames[i] = pane.Name
 	}
-	pv.titleBar = NewGradientCaptionRow(paneNames, titleGradient, textColor)
+	pv.titleBar = NewGradientCaptionRow(paneNames, pv.pluginDef.Background, textColor)
 
 	// panes container (rows)
 	pv.panes = tview.NewFlex().SetDirection(tview.FlexColumn)

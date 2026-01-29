@@ -13,16 +13,18 @@ import (
 type GradientCaptionRow struct {
 	*tview.Box
 	paneNames []string
-	gradient  config.Gradient
+	bgColor   tcell.Color     // original background color from plugin
+	gradient  config.Gradient // computed gradient (for truecolor/256-color terminals)
 	textColor tcell.Color
 }
 
 // NewGradientCaptionRow creates a new gradient caption row widget
-func NewGradientCaptionRow(paneNames []string, gradient config.Gradient, textColor tcell.Color) *GradientCaptionRow {
+func NewGradientCaptionRow(paneNames []string, bgColor tcell.Color, textColor tcell.Color) *GradientCaptionRow {
 	return &GradientCaptionRow{
 		Box:       tview.NewBox(),
 		paneNames: paneNames,
-		gradient:  gradient,
+		bgColor:   bgColor,
+		gradient:  computeCaptionGradient(bgColor),
 		textColor: textColor,
 	}
 }
@@ -59,14 +61,18 @@ func (gcr *GradientCaptionRow) Draw(screen tcell.Screen) {
 			}
 		}
 
-		// Use adaptive gradient: solid color when wide gradients disabled
-		// Wide gradients show visible banding on 256-color terminals
+		// Use adaptive gradient based on terminal color capabilities
 		var bgColor tcell.Color
 		if config.UseWideGradients {
+			// Truecolor: full gradient effect (dark center, bright edges)
 			bgColor = gradient.InterpolateColor(gcr.gradient, distanceFromCenter)
+		} else if config.UseGradients {
+			// 256-color: solid color from gradient (use brighter end for visibility)
+			bgColor = gradient.InterpolateColor(gcr.gradient, 1.0)
 		} else {
-			// Use the gradient's start color as fallback to preserve plugin identity
-			bgColor = gradient.InterpolateColor(gcr.gradient, 0.0)
+			// 8/16-color: use brighter fallback from gradient instead of original color
+			// Original plugin colors (like #1e3a5f) map to black on basic terminals
+			bgColor = gradient.InterpolateColor(gcr.gradient, 1.0)
 		}
 
 		// Determine which pane this position belongs to
@@ -115,8 +121,9 @@ const (
 	vibrantBoost = 2.6
 )
 
-// pluginCaptionGradient selects the gradient derivation for plugin captions.
-func pluginCaptionGradient(primary tcell.Color, fallback config.Gradient) config.Gradient {
+// computeCaptionGradient computes the gradient for caption background from a base color.
+func computeCaptionGradient(primary tcell.Color) config.Gradient {
+	fallback := config.GetColors().BoardPaneTitleGradient
 	if useVibrantPluginGradient {
 		return gradient.GradientFromColorVibrant(primary, vibrantBoost, fallback)
 	}
