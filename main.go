@@ -44,8 +44,12 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Handle init command
+	initRequested := len(os.Args) > 1 && os.Args[1] == "init"
+
 	// Handle viewer mode (standalone markdown viewer)
-	viewerInput, runViewer, err := viewer.ParseViewerInput(os.Args[1:], map[string]struct{}{})
+	// "init" is reserved to prevent treating it as a markdown file
+	viewerInput, runViewer, err := viewer.ParseViewerInput(os.Args[1:], map[string]struct{}{"init": {}})
 	if err != nil {
 		if errors.Is(err, viewer.ErrMultipleInputs) {
 			_, _ = fmt.Fprintln(os.Stderr, "error:", err)
@@ -62,7 +66,13 @@ func main() {
 		return
 	}
 
-	// Bootstrap application
+	// Check if project is initialized before launching TUI
+	if !initRequested && !config.IsProjectInitialized() {
+		printUsage()
+		return
+	}
+
+	// Bootstrap application (handles init prompt if needed when initRequested)
 	result, err := bootstrap.Bootstrap(tikiSkillMdContent, dokiSkillMdContent)
 	if err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, "error:", err)
@@ -122,4 +132,19 @@ func runSysInfo() error {
 	fmt.Print(info.String())
 
 	return nil
+}
+
+// printUsage prints usage information when tiki is run in an uninitialized repo.
+func printUsage() {
+	fmt.Print(`tiki - Terminal-based task and documentation management
+
+Usage:
+  tiki              Launch TUI in initialized repo
+  tiki init         Initialize project in current git repo
+  tiki file.md/URL  View markdown file
+  tiki sysinfo      Display system information
+  tiki --version    Show version
+
+Run 'tiki init' to initialize this repository.
+`)
 }

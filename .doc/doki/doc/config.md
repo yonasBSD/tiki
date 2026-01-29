@@ -49,22 +49,6 @@ tiki  # Will use ~/my-config/tiki/ for configuration
 Example `config.yaml` with available settings:
 
 ```yaml
-# Appearance settings
-appearance:
-  theme: auto               # Theme: "auto" (detect from terminal), "dark", "light"
-  gradientThreshold: 256    # Minimum terminal colors for gradient rendering
-                            # Options: 16, 256, 16777216 (truecolor)
-                            # Gradients disabled if terminal has fewer colors
-                            # Default: 256 (works well on most terminals)
-
-# Logging settings
-logging:
-  level: error              # Log level: "debug", "info", "warn", "error"
-
-# Board view settings
-board:
-  view: expanded            # Default board view: "compact", "expanded"
-
 # Header settings
 header:
   visible: true             # Show/hide header: true, false
@@ -72,4 +56,22 @@ header:
 # Tiki settings
 tiki:
   maxPoints: 10             # Maximum story points for tasks
+
+# Logging settings
+logging:
+  level: error              # Log level: "debug", "info", "warn", "error"
+
+# Plugin settings are defined in their YAML file but can be overridden here
+Kanban:
+  view: expanded            # Default board view: "compact", "expanded"
+Backlog:
+  view: compact
+
+# Appearance settings
+appearance:
+  theme: auto               # Theme: "auto" (detect from terminal), "dark", "light"
+  gradientThreshold: 256    # Minimum terminal colors for gradient rendering
+                            # Options: 16, 256, 16777216 (truecolor)
+                            # Gradients disabled if terminal has fewer colors
+                            # Default: 256 (works well on most terminals)
 ```

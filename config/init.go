@@ -14,6 +14,17 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+// IsProjectInitialized returns true if the project has been initialized
+// (i.e., the .doc/tiki directory exists).
+func IsProjectInitialized() bool {
+	taskDir := GetTaskDir()
+	info, err := os.Stat(taskDir)
+	if err != nil {
+		return false
+	}
+	return info.IsDir()
+}
+
 // PromptForProjectInit presents a Huh form for project initialization.
 // Returns (selectedAITools, proceed, error)
 func PromptForProjectInit() ([]string, bool, error) {

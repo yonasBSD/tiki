@@ -128,3 +128,14 @@ func TestParseViewerInputReserved(t *testing.T) {
 		t.Fatalf("expected viewer mode to be false")
 	}
 }
+
+func TestParseViewerInputInitReserved(t *testing.T) {
+	// "init" must be reserved to prevent treating it as a markdown file
+	_, ok, err := ParseViewerInput([]string{"init"}, map[string]struct{}{"init": {}})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if ok {
+		t.Fatalf("expected viewer mode to be false for reserved 'init' command")
+	}
+}

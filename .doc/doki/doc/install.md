@@ -33,6 +33,12 @@ GOBIN=$HOME/.local/bin go install github.com/boolean-maybe/tiki@latest
 tiki --version
 ```
 
+## Initialize a project
+```bash
+cd /path/to/your/git/repo
+tiki init
+```
+
 # Terminal Requirements
 
 `tiki` CLI tool works best with modern terminal emulators that support:
