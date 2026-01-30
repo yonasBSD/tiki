@@ -139,3 +139,13 @@ func TestParseViewerInputInitReserved(t *testing.T) {
 		t.Fatalf("expected viewer mode to be false for reserved 'init' command")
 	}
 }
+
+func TestParseViewerInputUnknownFlag(t *testing.T) {
+	_, ok, err := ParseViewerInput([]string{"--verson"}, map[string]struct{}{})
+	if !errors.Is(err, ErrUnknownFlag) {
+		t.Fatalf("expected unknown flag error, got %v", err)
+	}
+	if ok {
+		t.Fatalf("expected viewer mode to be false")
+	}
+}

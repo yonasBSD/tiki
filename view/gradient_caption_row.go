@@ -67,8 +67,8 @@ func (gcr *GradientCaptionRow) Draw(screen tcell.Screen) {
 			// Truecolor: full gradient effect (dark center, bright edges)
 			bgColor = gradient.InterpolateColor(gcr.gradient, distanceFromCenter)
 		} else if config.UseGradients {
-			// 256-color: solid color from gradient (use brighter end for visibility)
-			bgColor = gradient.InterpolateColor(gcr.gradient, 1.0)
+			// 256-color: solid color from gradient (use darker start for consistency)
+			bgColor = gradient.InterpolateColor(gcr.gradient, 0.0)
 		} else {
 			// 8/16-color: use brighter fallback from gradient instead of original color
 			// Original plugin colors (like #1e3a5f) map to black on basic terminals

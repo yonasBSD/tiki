@@ -35,9 +35,15 @@ type InputSpec struct {
 // ErrMultipleInputs is returned when more than one input is provided.
 var ErrMultipleInputs = errors.New("multiple input arguments provided")
 
+// ErrUnknownFlag is returned when an unrecognized flag is provided.
+var ErrUnknownFlag = errors.New("unknown flag")
+
 // ParseViewerInput resolves a single input to decide if viewer mode should run.
 func ParseViewerInput(args []string, reservedCommands map[string]struct{}) (InputSpec, bool, error) {
-	positional := collectPositionalArgs(args)
+	positional, err := collectPositionalArgs(args)
+	if err != nil {
+		return InputSpec{}, false, err
+	}
 	if len(positional) == 0 {
 		return InputSpec{}, false, nil
 	}
@@ -58,7 +64,8 @@ func ParseViewerInput(args []string, reservedCommands map[string]struct{}) (Inpu
 }
 
 // collectPositionalArgs strips known flags and keeps the single viewer input.
-func collectPositionalArgs(args []string) []string {
+// Returns an error if an unknown flag is encountered.
+func collectPositionalArgs(args []string) ([]string, error) {
 	var positional []string
 	skipNext := false
 
@@ -92,13 +99,13 @@ func collectPositionalArgs(args []string) []string {
 			if arg == "-v" || arg == "--version" {
 				continue
 			}
-			continue
+			return nil, fmt.Errorf("%w: %s", ErrUnknownFlag, arg)
 		}
 
 		positional = append(positional, arg)
 	}
 
-	return positional
+	return positional, nil
 }
 
 // isValidLogLevel matches supported logger levels for flag parsing.
