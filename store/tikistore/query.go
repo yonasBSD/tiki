@@ -55,7 +55,7 @@ func (s *TikiStore) GetBacklogTasks() []*taskpkg.Task {
 	return tasks
 }
 
-// SearchBacklog searches backlog tasks by title (case-insensitive).
+// SearchBacklog searches backlog tasks by title and description (case-insensitive).
 // Returns results with Score for relevance (currently all 1.0, sorted by priority then title).
 func (s *TikiStore) SearchBacklog(query string) []taskpkg.SearchResult {
 	s.mu.RLock()
@@ -82,7 +82,7 @@ func (s *TikiStore) SearchBacklog(query string) []taskpkg.SearchResult {
 	var tasks []*taskpkg.Task
 	for _, t := range s.tasks {
 		if taskpkg.StatusPane(t.Status) == taskpkg.StatusBacklog {
-			if strings.Contains(strings.ToLower(t.Title), queryLower) {
+			if matchesQuery(t, queryLower) {
 				tasks = append(tasks, t)
 			}
 		}
@@ -95,8 +95,18 @@ func (s *TikiStore) SearchBacklog(query string) []taskpkg.SearchResult {
 	return results
 }
 
+func matchesQuery(task *taskpkg.Task, queryLower string) bool {
+	if task == nil || queryLower == "" {
+		return false
+	}
+	if strings.Contains(strings.ToLower(task.Title), queryLower) {
+		return true
+	}
+	return strings.Contains(strings.ToLower(task.Description), queryLower)
+}
+
 // Search searches tasks with optional filter function.
-// query: case-insensitive search term (searches task titles)
+// query: case-insensitive search term (searches task titles and descriptions)
 // filterFunc: filter function to pre-filter tasks (nil = all tasks)
 // Returns matching tasks sorted by priority then title with relevance scores.
 func (s *TikiStore) Search(query string, filterFunc func(*taskpkg.Task) bool) []taskpkg.SearchResult {
@@ -130,7 +140,7 @@ func (s *TikiStore) Search(query string, filterFunc func(*taskpkg.Task) bool) []
 	} else {
 		// Filter by query
 		for _, t := range candidateTasks {
-			if strings.Contains(strings.ToLower(t.Title), queryLower) {
+			if matchesQuery(t, queryLower) {
 				matchedTasks = append(matchedTasks, t)
 			}
 		}

@@ -68,28 +68,32 @@ func TestSearchBacklog(t *testing.T) {
 	store := &TikiStore{
 		tasks: map[string]*taskpkg.Task{
 			"TIKI-abc123": {
-				ID:       "TIKI-abc123",
-				Title:    "Testing Task",
-				Status:   taskpkg.StatusBacklog,
-				Priority: 2,
+				ID:          "TIKI-abc123",
+				Title:       "Testing Task",
+				Description: "Deep dive into search behavior",
+				Status:      taskpkg.StatusBacklog,
+				Priority:    2,
 			},
 			"TIKI-def456": {
-				ID:       "TIKI-def456",
-				Title:    "Bug in Tests",
-				Status:   taskpkg.StatusBacklog,
-				Priority: 1,
+				ID:          "TIKI-def456",
+				Title:       "Bug in Tests",
+				Description: "Investigate intermittent failures",
+				Status:      taskpkg.StatusBacklog,
+				Priority:    1,
 			},
 			"TIKI-ghi789": {
-				ID:       "TIKI-ghi789",
-				Title:    "Feature Request",
-				Status:   taskpkg.StatusBacklog,
-				Priority: 3,
+				ID:          "TIKI-ghi789",
+				Title:       "Feature Request",
+				Description: "Add a new export format",
+				Status:      taskpkg.StatusBacklog,
+				Priority:    3,
 			},
 			"TIKI-jkl012": {
-				ID:       "TIKI-jkl012",
-				Title:    "In Progress Task",
-				Status:   taskpkg.StatusReady, // not backlog
-				Priority: 1,
+				ID:          "TIKI-jkl012",
+				Title:       "In Progress Task",
+				Description: "Not in backlog",
+				Status:      taskpkg.StatusReady, // not backlog
+				Priority:    1,
 			},
 		},
 	}
@@ -137,6 +141,12 @@ func TestSearchBacklog(t *testing.T) {
 			expectedCount: 0,
 		},
 		{
+			name:          "matches description",
+			query:         "intermittent",
+			expectedIDs:   []string{"TIKI-def456"},
+			expectedCount: 1,
+		},
+		{
 			name:          "only searches backlog status",
 			query:         "Progress", // matches TIKI-jkl012 title but wrong status
 			expectedIDs:   []string{},
@@ -166,6 +176,48 @@ func TestSearchBacklog(t *testing.T) {
 	}
 }
 
+func TestSearch_AllTasksIncludesDescription(t *testing.T) {
+	store := &TikiStore{
+		tasks: map[string]*taskpkg.Task{
+			"TIKI-aaa111": {
+				ID:          "TIKI-aaa111",
+				Title:       "Alpha Task",
+				Description: "Contains the keyword needle",
+				Status:      taskpkg.StatusBacklog,
+				Priority:    2,
+			},
+			"TIKI-bbb222": {
+				ID:          "TIKI-bbb222",
+				Title:       "Beta Task",
+				Description: "No match here",
+				Status:      taskpkg.StatusReady,
+				Priority:    1,
+			},
+			"TIKI-ccc333": {
+				ID:          "TIKI-ccc333",
+				Title:       "Gamma Task",
+				Description: "Another needle appears",
+				Status:      taskpkg.StatusReview,
+				Priority:    3,
+			},
+		},
+	}
+
+	results := store.Search("needle", nil)
+	if len(results) != 2 {
+		t.Fatalf("result count = %d, want 2", len(results))
+	}
+
+	expectedIDs := []string{"TIKI-aaa111", "TIKI-ccc333"} // sorted by priority then title
+	for i, result := range results {
+		if result.Task.ID != expectedIDs[i] {
+			t.Errorf("results[%d].Task.ID = %q, want %q", i, result.Task.ID, expectedIDs[i])
+		}
+		if result.Score != 1.0 {
+			t.Errorf("results[%d].Score = %f, want 1.0", i, result.Score)
+		}
+	}
+}
 func TestLoadTaskFile_InvalidTags(t *testing.T) {
 	// Create temporary directory for test files
 	tmpDir := t.TempDir()
