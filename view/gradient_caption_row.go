@@ -118,7 +118,7 @@ func (gcr *GradientCaptionRow) Draw(screen tcell.Screen) {
 const (
 	useVibrantPluginGradient = true
 	// increase this to get vibrance boost
-	vibrantBoost = 2.6
+	vibrantBoost = 1.6
 )
 
 // computeCaptionGradient computes the gradient for caption background from a base color.

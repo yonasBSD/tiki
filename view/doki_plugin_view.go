@@ -85,9 +85,9 @@ func (dv *DokiView) build() {
 
 	case "internal":
 		cnt := map[string]string{
-			"Help":      helpMd,
-			"tiki":      tikiMd,
-			"customize": customMd,
+			"Help":    helpMd,
+			"tiki.md": tikiMd,
+			"view.md": customMd,
 		}
 		provider := &internalDokiProvider{content: cnt}
 		content, err = provider.FetchContent(nav.NavElement{Text: dv.pluginDef.Text})
@@ -199,6 +199,10 @@ func (p *internalDokiProvider) FetchContent(elem nav.NavElement) (string, error)
 	if p == nil {
 		return "", nil
 	}
-	// Internal docs use text as the key, never URL
-	return p.content[elem.Text], nil
+	// Use URL for link navigation, Text for initial load
+	key := elem.URL
+	if key == "" {
+		key = elem.Text
+	}
+	return p.content[key], nil
 }

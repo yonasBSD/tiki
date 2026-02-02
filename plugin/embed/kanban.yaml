@@ -1,6 +1,6 @@
 name: Kanban
 foreground: "#87ceeb"
-background: "#1e3a5f"
+background: "#25496a"
 key: "F1"
 panes:
   - name: Ready

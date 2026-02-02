@@ -1,6 +1,6 @@
 name: Backlog
 foreground: "#5fff87"
-background: "#005f00"
+background: "#0b3d2e"
 key: "F3"
 panes:
   - name: Backlog
