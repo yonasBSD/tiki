@@ -1,4 +1,4 @@
-# Hello! こんにちは
+# Hello!
 
 This is a wiki-style documentation called `doki` saved as Markdown files alongside the project
 Since they are stored in git they are versioned and all edits can be seen in the git history along with the timestamp
