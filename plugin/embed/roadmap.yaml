@@ -1,6 +1,6 @@
 name: Roadmap
-foreground: "#e1bee7"
-background: "#2f3a5f"
+foreground: "#e2e8f0"
+background: "#2a5f5a"
 key: "F4"
 panes:
   - name: Now
