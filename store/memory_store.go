@@ -21,6 +21,10 @@ type InMemoryStore struct {
 	nextListenerID int
 }
 
+func normalizeTaskID(id string) string {
+	return strings.ToUpper(strings.TrimSpace(id))
+}
+
 // NewInMemoryStore creates a new in-memory task store
 func NewInMemoryStore() *InMemoryStore {
 	return &InMemoryStore{
@@ -69,6 +73,7 @@ func (s *InMemoryStore) CreateTask(task *task.Task) error {
 	now := time.Now()
 	task.CreatedAt = now
 	task.UpdatedAt = now
+	task.ID = normalizeTaskID(task.ID)
 	s.tasks[task.ID] = task
 	s.mu.Unlock()
 	s.notifyListeners()
@@ -79,13 +84,14 @@ func (s *InMemoryStore) CreateTask(task *task.Task) error {
 func (s *InMemoryStore) GetTask(id string) *task.Task {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	return s.tasks[id]
+	return s.tasks[normalizeTaskID(id)]
 }
 
 // UpdateTask updates an existing task
 func (s *InMemoryStore) UpdateTask(task *task.Task) error {
 	s.mu.Lock()
 
+	task.ID = normalizeTaskID(task.ID)
 	if _, exists := s.tasks[task.ID]; !exists {
 		s.mu.Unlock()
 		return fmt.Errorf("task not found: %s", task.ID)
@@ -102,6 +108,7 @@ func (s *InMemoryStore) UpdateTask(task *task.Task) error {
 func (s *InMemoryStore) UpdateStatus(taskID string, newStatus task.Status) bool {
 	s.mu.Lock()
 
+	taskID = normalizeTaskID(taskID)
 	task, exists := s.tasks[taskID]
 	if !exists {
 		s.mu.Unlock()
@@ -131,7 +138,7 @@ func isValidTransition(from, to task.Status) bool {
 // DeleteTask removes a task from the store
 func (s *InMemoryStore) DeleteTask(id string) {
 	s.mu.Lock()
-	delete(s.tasks, id)
+	delete(s.tasks, normalizeTaskID(id))
 	s.mu.Unlock()
 	s.notifyListeners()
 }
@@ -225,6 +232,7 @@ func (s *InMemoryStore) Search(query string, filterFunc func(*task.Task) bool) [
 func (s *InMemoryStore) AddComment(taskID string, comment task.Comment) bool {
 	s.mu.Lock()
 
+	taskID = normalizeTaskID(taskID)
 	task, exists := s.tasks[taskID]
 	if !exists {
 		s.mu.Unlock()

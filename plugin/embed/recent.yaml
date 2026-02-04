@@ -5,5 +5,5 @@ key: Ctrl-R
 panes:
   - name: Recent
     columns: 4
-    filter: NOW - UpdatedAt < 2hours
+    filter: NOW - UpdatedAt < 12hours
 sort: UpdatedAt DESC

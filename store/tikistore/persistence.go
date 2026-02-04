@@ -226,10 +226,11 @@ func (s *TikiStore) Reload() error {
 
 // ReloadTask reloads a single task from disk by ID
 func (s *TikiStore) ReloadTask(taskID string) error {
-	slog.Debug("reloading single task", "task_id", taskID)
+	normalizedID := normalizeTaskID(taskID)
+	slog.Debug("reloading single task", "task_id", normalizedID)
 
 	// Construct file path
-	filename := strings.ToLower(taskID) + ".md"
+	filename := strings.ToLower(normalizedID) + ".md"
 	filePath := filepath.Join(s.dir, filename)
 
 	// Fetch git info for this single file
@@ -256,7 +257,7 @@ func (s *TikiStore) ReloadTask(taskID string) error {
 	s.mu.Unlock()
 
 	s.notifyListeners()
-	slog.Debug("task reloaded successfully", "task_id", taskID)
+	slog.Debug("task reloaded successfully", "task_id", task.ID)
 	return nil
 }
 

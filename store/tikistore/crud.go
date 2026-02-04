@@ -29,6 +29,8 @@ func (s *TikiStore) CreateTask(task *taskpkg.Task) error {
 		}
 	}
 
+	task.ID = normalizeTaskID(task.ID)
+
 	s.tasks[task.ID] = task
 	if err := s.saveTask(task); err != nil {
 		// Rollback on failure
@@ -49,13 +51,14 @@ func (s *TikiStore) GetTask(id string) *taskpkg.Task {
 	slog.Debug("retrieving task", "task_id", id)
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	return s.tasks[id]
+	return s.tasks[normalizeTaskID(id)]
 }
 
 // UpdateTask updates an existing task and saves it
 func (s *TikiStore) UpdateTask(task *taskpkg.Task) error {
 	s.mu.Lock()
 
+	task.ID = normalizeTaskID(task.ID)
 	oldTask, exists := s.tasks[task.ID]
 	if !exists {
 		s.mu.Unlock()
@@ -81,6 +84,7 @@ func (s *TikiStore) UpdateTask(task *taskpkg.Task) error {
 func (s *TikiStore) UpdateStatus(taskID string, newStatus taskpkg.Status) bool {
 	s.mu.Lock()
 
+	taskID = normalizeTaskID(taskID)
 	task, exists := s.tasks[taskID]
 	if !exists {
 		s.mu.Unlock()
@@ -113,12 +117,13 @@ func (s *TikiStore) UpdateStatus(taskID string, newStatus taskpkg.Status) bool {
 func (s *TikiStore) DeleteTask(id string) {
 	s.mu.Lock()
 
-	if _, exists := s.tasks[id]; !exists {
+	normalizedID := normalizeTaskID(id)
+	if _, exists := s.tasks[normalizedID]; !exists {
 		s.mu.Unlock()
 		return
 	}
 
-	path := s.taskFilePath(id)
+	path := s.taskFilePath(normalizedID)
 
 	// Try git rm first if git is available
 	removed := false
@@ -140,9 +145,9 @@ func (s *TikiStore) DeleteTask(id string) {
 	}
 
 	// Only delete from memory after successful file deletion
-	delete(s.tasks, id)
+	delete(s.tasks, normalizedID)
 	s.mu.Unlock()
-	slog.Info("task deleted", "task_id", id)
+	slog.Info("task deleted", "task_id", normalizedID)
 	s.notifyListeners()
 }
 
@@ -152,6 +157,7 @@ func (s *TikiStore) DeleteTask(id string) {
 func (s *TikiStore) AddComment(taskID string, comment taskpkg.Comment) bool {
 	s.mu.Lock()
 
+	taskID = normalizeTaskID(taskID)
 	task, exists := s.tasks[taskID]
 	if !exists {
 		s.mu.Unlock()

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"strings"
 	"sync"
 
 	"github.com/boolean-maybe/tiki/store"
@@ -15,6 +16,10 @@ import (
 
 // ErrConflict indicates a task was modified externally since it was loaded
 var ErrConflict = errors.New("task was modified externally")
+
+func normalizeTaskID(id string) string {
+	return strings.ToUpper(strings.TrimSpace(id))
+}
 
 // TikiStore stores tasks as markdown files with YAML frontmatter.
 // Each task is a separate .md file in the configured directory.

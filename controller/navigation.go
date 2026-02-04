@@ -18,13 +18,15 @@ type NavigationController struct {
 	navState         *viewStack
 	activeViewGetter func() View                                              // returns the currently displayed view from RootLayout
 	onViewChanged    func(viewID model.ViewID, params map[string]interface{}) // callback when view changes (for layoutModel sync)
+	editorOpener     func(string) error
 }
 
 // NewNavigationController creates a navigation controller
 func NewNavigationController(app *tview.Application) *NavigationController {
 	return &NavigationController{
-		app:      app,
-		navState: newViewStack(),
+		app:          app,
+		navState:     newViewStack(),
+		editorOpener: util.OpenInEditor,
 	}
 }
 
@@ -36,6 +38,11 @@ func (nc *NavigationController) SetActiveViewGetter(getter func() View) {
 // SetOnViewChanged registers a callback that runs when the view changes (for layoutModel sync)
 func (nc *NavigationController) SetOnViewChanged(callback func(viewID model.ViewID, params map[string]interface{})) {
 	nc.onViewChanged = callback
+}
+
+// SetEditorOpener overrides the default editor opener (useful for tests).
+func (nc *NavigationController) SetEditorOpener(opener func(string) error) {
+	nc.editorOpener = opener
 }
 
 // PushView navigates to a new view, adding it to the stack
@@ -129,7 +136,11 @@ func (nc *NavigationController) HandleQuit() {
 // After the editor exits, the application resumes and redraws.
 func (nc *NavigationController) SuspendAndEdit(filePath string) {
 	nc.app.Suspend(func() {
-		if err := util.OpenInEditor(filePath); err != nil {
+		opener := nc.editorOpener
+		if opener == nil {
+			opener = util.OpenInEditor
+		}
+		if err := opener(filePath); err != nil {
 			slog.Error("failed to open editor", "file", filePath, "error", err)
 		}
 	})

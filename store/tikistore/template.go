@@ -126,6 +126,8 @@ func (s *TikiStore) NewTaskTemplate() (*taskpkg.Task, error) {
 		slog.Debug("ID collision detected during template creation, regenerating", "id", taskID)
 	}
 
+	taskID = normalizeTaskID(taskID)
+
 	// Load template (with defaults)
 	template := loadTemplateTask()
 

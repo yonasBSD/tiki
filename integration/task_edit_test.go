@@ -136,6 +136,69 @@ func TestNewTask_CtrlS_SavesAndCreatesFile(t *testing.T) {
 	}
 }
 
+func TestEditSource_DuplicateCaseIDs_Repro(t *testing.T) {
+	ta := testutil.NewTestApp(t)
+	defer ta.Cleanup()
+
+	// Create a task with lowercase suffix ID directly in the store.
+	task := &taskpkg.Task{
+		ID:       "TIKI-6eqdue",
+		Title:    "Edit Source Duplicate",
+		Type:     taskpkg.TypeStory,
+		Status:   taskpkg.StatusBacklog,
+		Priority: 3,
+		Points:   1,
+	}
+	if err := ta.TaskStore.CreateTask(task); err != nil {
+		t.Fatalf("CreateTask failed: %v", err)
+	}
+	if task.ID != "TIKI-6EQDUE" {
+		t.Fatalf("expected task ID to be normalized, got %q", task.ID)
+	}
+
+	// Mock editor to modify the task file and return immediately.
+	ta.NavController.SetEditorOpener(func(path string) error {
+		content, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		content = append(content, '\n')
+		return os.WriteFile(path, content, 0644)
+	})
+
+	// Open task detail view directly.
+	ta.NavController.PushView(model.TaskDetailViewID, model.EncodeTaskDetailParams(model.TaskDetailParams{
+		TaskID: task.ID,
+	}))
+	ta.Draw()
+
+	// Trigger "Edit source" (key 's') which reloads the task after editor returns.
+	ta.SendKey(tcell.KeyRune, 's', tcell.ModNone)
+
+	// Expect a single task in store (no case-duplicate).
+	tasks := ta.TaskStore.GetAllTasks()
+	if len(tasks) != 1 {
+		t.Fatalf("expected 1 task after edit source, got %d", len(tasks))
+	}
+
+	foundUpper := false
+	for _, tsk := range tasks {
+		switch tsk.ID {
+		case "TIKI-6EQDUE":
+			foundUpper = true
+		}
+	}
+	if !foundUpper {
+		t.Fatalf("expected uppercase ID variant, foundUpper=%v", foundUpper)
+	}
+
+	// Ensure file path is the lowercased ID (edit source uses this file).
+	taskPath := filepath.Join(ta.TaskDir, strings.ToLower(task.ID)+".md")
+	if _, err := os.Stat(taskPath); os.IsNotExist(err) {
+		t.Fatalf("expected task file to exist at %s", taskPath)
+	}
+}
+
 func TestNewTask_EmptyTitle_DoesNotSave(t *testing.T) {
 	ta := testutil.NewTestApp(t)
 	defer ta.Cleanup()
