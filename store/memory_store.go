@@ -171,39 +171,6 @@ func (s *InMemoryStore) GetTasksByStatus(status task.Status) []*task.Task {
 	return tasks
 }
 
-// GetBacklogTasks returns tasks with backlog status
-func (s *InMemoryStore) GetBacklogTasks() []*task.Task {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
-	var tasks []*task.Task
-	for _, t := range s.tasks {
-		if task.StatusPane(t.Status) == task.StatusBacklog {
-			tasks = append(tasks, t)
-		}
-	}
-	return tasks
-}
-
-// SearchBacklog searches backlog tasks by title (case-insensitive).
-// Returns results with Score for relevance (currently all 1.0).
-func (s *InMemoryStore) SearchBacklog(query string) []task.SearchResult {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
-	query = strings.TrimSpace(query)
-	var results []task.SearchResult
-
-	for _, t := range s.tasks {
-		if task.StatusPane(t.Status) == task.StatusBacklog {
-			if query == "" || strings.Contains(strings.ToLower(t.Title), strings.ToLower(query)) {
-				results = append(results, task.SearchResult{Task: t, Score: 1.0})
-			}
-		}
-	}
-	return results
-}
-
 // Search searches tasks with optional filter function (simplified in-memory version)
 func (s *InMemoryStore) Search(query string, filterFunc func(*task.Task) bool) []task.SearchResult {
 	s.mu.RLock()

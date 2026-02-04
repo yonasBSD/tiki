@@ -37,14 +37,6 @@ type Store interface {
 	// GetTasksByStatus returns tasks filtered by status
 	GetTasksByStatus(status task.Status) []*task.Task
 
-	// GetBacklogTasks returns tasks with backlog status
-	GetBacklogTasks() []*task.Task
-
-	// SearchBacklog searches backlog tasks by title (case-insensitive).
-	// Returns results in relevance order (Score for future use).
-	// Deprecated: Use Search() instead for more flexible searching.
-	SearchBacklog(query string) []task.SearchResult
-
 	// Search searches tasks with optional filter function.
 	// query: case-insensitive search term (searches task titles)
 	// filterFunc: optional filter function to pre-filter tasks (nil = all tasks)

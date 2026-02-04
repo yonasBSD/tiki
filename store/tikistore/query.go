@@ -39,62 +39,6 @@ func (s *TikiStore) GetTasksByStatus(status taskpkg.Status) []*taskpkg.Task {
 	return tasks
 }
 
-// GetBacklogTasks returns tasks with backlog status, sorted by priority then title
-func (s *TikiStore) GetBacklogTasks() []*taskpkg.Task {
-	slog.Debug("retrieving backlog tasks")
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
-	var tasks []*taskpkg.Task
-	for _, t := range s.tasks {
-		if taskpkg.StatusPane(t.Status) == taskpkg.StatusBacklog {
-			tasks = append(tasks, t)
-		}
-	}
-	sortTasks(tasks)
-	return tasks
-}
-
-// SearchBacklog searches backlog tasks by title and description (case-insensitive).
-// Returns results with Score for relevance (currently all 1.0, sorted by priority then title).
-func (s *TikiStore) SearchBacklog(query string) []taskpkg.SearchResult {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
-	query = strings.TrimSpace(query)
-	if query == "" {
-		// Return all backlog tasks
-		var tasks []*taskpkg.Task
-		for _, t := range s.tasks {
-			if taskpkg.StatusPane(t.Status) == taskpkg.StatusBacklog {
-				tasks = append(tasks, t)
-			}
-		}
-		sortTasks(tasks)
-		results := make([]taskpkg.SearchResult, len(tasks))
-		for i, t := range tasks {
-			results[i] = taskpkg.SearchResult{Task: t, Score: 1.0}
-		}
-		return results
-	}
-
-	queryLower := strings.ToLower(query)
-	var tasks []*taskpkg.Task
-	for _, t := range s.tasks {
-		if taskpkg.StatusPane(t.Status) == taskpkg.StatusBacklog {
-			if matchesQuery(t, queryLower) {
-				tasks = append(tasks, t)
-			}
-		}
-	}
-	sortTasks(tasks)
-	results := make([]taskpkg.SearchResult, len(tasks))
-	for i, t := range tasks {
-		results[i] = taskpkg.SearchResult{Task: t, Score: 1.0}
-	}
-	return results
-}
-
 func matchesQuery(task *taskpkg.Task, queryLower string) bool {
 	if task == nil || queryLower == "" {
 		return false
