@@ -26,7 +26,7 @@ type TaskEditView struct {
 	// Edit state
 	focusedField     model.EditField
 	validationErrors []string
-	headerFrame      *tview.Frame
+	metadataBox      *tview.Frame
 
 	// All field editors
 	titleInput         *tview.InputField
@@ -147,8 +147,8 @@ func (ev *TaskEditView) refresh() {
 	colors := config.GetColors()
 
 	if !ev.fullscreen {
-		headerFrame := ev.buildHeader(task, colors)
-		ev.content.AddItem(headerFrame, 9, 0, false)
+		metadataBox := ev.buildMetadataBox(task, colors)
+		ev.content.AddItem(metadataBox, 9, 0, false)
 	}
 
 	descPrimitive := ev.buildDescription(task)
@@ -157,8 +157,8 @@ func (ev *TaskEditView) refresh() {
 	ev.updateValidationState()
 }
 
-func (ev *TaskEditView) buildHeader(task *taskpkg.Task, colors *config.ColorConfig) *tview.Frame {
-	headerContainer := tview.NewFlex().SetDirection(tview.FlexRow)
+func (ev *TaskEditView) buildMetadataBox(task *taskpkg.Task, colors *config.ColorConfig) *tview.Frame {
+	metadataContainer := tview.NewFlex().SetDirection(tview.FlexRow)
 
 	leftSide := tview.NewFlex().SetDirection(tview.FlexRow)
 
@@ -191,15 +191,15 @@ func (ev *TaskEditView) buildHeader(task *taskpkg.Task, colors *config.ColorConf
 	mainRow.AddItem(leftSide, 0, 3, true)
 	mainRow.AddItem(rightSide, 0, 1, false)
 
-	headerContainer.AddItem(mainRow, 0, 1, false)
+	metadataContainer.AddItem(mainRow, 0, 1, false)
 
-	headerFrame := tview.NewFrame(headerContainer).SetBorders(0, 0, 0, 0, 0, 0)
-	headerFrame.SetBorder(true).SetTitle(fmt.Sprintf(" %s ", gradient.RenderAdaptiveGradientText(task.ID, colors.TaskDetailIDColor, config.FallbackTaskIDColor))).SetBorderColor(colors.TaskBoxUnselectedBorder)
-	headerFrame.SetBorderPadding(1, 0, 2, 2)
+	metadataBox := tview.NewFrame(metadataContainer).SetBorders(0, 0, 0, 0, 0, 0)
+	metadataBox.SetBorder(true).SetTitle(fmt.Sprintf(" %s ", gradient.RenderAdaptiveGradientText(task.ID, colors.TaskDetailIDColor, config.FallbackTaskIDColor))).SetBorderColor(colors.TaskBoxUnselectedBorder)
+	metadataBox.SetBorderPadding(1, 0, 2, 2)
 
-	ev.headerFrame = headerFrame
+	ev.metadataBox = metadataBox
 
-	return headerFrame
+	return metadataBox
 }
 
 func (ev *TaskEditView) buildTitlePrimitive(task *taskpkg.Task, colors *config.ColorConfig) tview.Primitive {
@@ -359,12 +359,12 @@ func (ev *TaskEditView) updateValidationState() {
 	}
 
 	// Update border color based on validation
-	if ev.headerFrame != nil {
+	if ev.metadataBox != nil {
 		colors := config.DefaultColors()
 		if len(ev.validationErrors) > 0 {
-			ev.headerFrame.SetBorderColor(colors.TaskBoxSelectedBorder)
+			ev.metadataBox.SetBorderColor(colors.TaskBoxSelectedBorder)
 		} else {
-			ev.headerFrame.SetBorderColor(colors.TaskBoxUnselectedBorder)
+			ev.metadataBox.SetBorderColor(colors.TaskBoxUnselectedBorder)
 		}
 	}
 }

@@ -103,8 +103,8 @@ func (tv *TaskDetailView) refresh() {
 	colors := config.GetColors()
 
 	if !tv.fullscreen {
-		headerFrame := tv.buildHeader(task, colors)
-		tv.content.AddItem(headerFrame, 9, 0, false)
+		metadataBox := tv.buildMetadataBox(task, colors)
+		tv.content.AddItem(metadataBox, 9, 0, false)
 	}
 
 	descPrimitive := tv.buildDescription(task)
@@ -119,8 +119,8 @@ func (tv *TaskDetailView) refresh() {
 	}
 }
 
-func (tv *TaskDetailView) buildHeader(task *taskpkg.Task, colors *config.ColorConfig) *tview.Frame {
-	headerContainer := tview.NewFlex().SetDirection(tview.FlexRow)
+func (tv *TaskDetailView) buildMetadataBox(task *taskpkg.Task, colors *config.ColorConfig) *tview.Frame {
+	metadataContainer := tview.NewFlex().SetDirection(tview.FlexRow)
 
 	leftSide := tview.NewFlex().SetDirection(tview.FlexRow)
 
@@ -151,13 +151,13 @@ func (tv *TaskDetailView) buildHeader(task *taskpkg.Task, colors *config.ColorCo
 	mainRow.AddItem(leftSide, 0, 3, false)
 	mainRow.AddItem(rightSide, 0, 1, false)
 
-	headerContainer.AddItem(mainRow, 0, 1, false)
+	metadataContainer.AddItem(mainRow, 0, 1, false)
 
-	headerFrame := tview.NewFrame(headerContainer).SetBorders(0, 0, 0, 0, 0, 0)
-	headerFrame.SetBorder(true).SetTitle(fmt.Sprintf(" %s ", gradient.RenderAdaptiveGradientText(task.ID, colors.TaskDetailIDColor, config.FallbackTaskIDColor))).SetBorderColor(colors.TaskBoxUnselectedBorder)
-	headerFrame.SetBorderPadding(1, 0, 2, 2)
+	metadataBox := tview.NewFrame(metadataContainer).SetBorders(0, 0, 0, 0, 0, 0)
+	metadataBox.SetBorder(true).SetTitle(fmt.Sprintf(" %s ", gradient.RenderAdaptiveGradientText(task.ID, colors.TaskDetailIDColor, config.FallbackTaskIDColor))).SetBorderColor(colors.TaskBoxUnselectedBorder)
+	metadataBox.SetBorderPadding(1, 0, 2, 2)
 
-	return headerFrame
+	return metadataBox
 }
 
 func (tv *TaskDetailView) buildTitlePrimitive(task *taskpkg.Task, colors *config.ColorConfig) tview.Primitive {
