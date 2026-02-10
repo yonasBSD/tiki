@@ -11,7 +11,7 @@ import (
 
 // WorkflowFile represents the YAML structure of a workflow.yaml file
 type WorkflowFile struct {
-	Plugins []pluginFileConfig `yaml:"plugins"`
+	Plugins []pluginFileConfig `yaml:"views"`
 }
 
 // loadConfiguredPlugins loads plugins defined in workflow.yaml

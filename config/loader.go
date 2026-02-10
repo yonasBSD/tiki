@@ -166,7 +166,7 @@ func GetInt(key string) int {
 // workflowFileData represents the YAML structure of workflow.yaml for read-modify-write.
 // kept in config package to avoid import cycle with plugin package.
 type workflowFileData struct {
-	Plugins []map[string]interface{} `yaml:"plugins"`
+	Plugins []map[string]interface{} `yaml:"views"`
 }
 
 // readWorkflowFile reads and unmarshals workflow.yaml from the given path.

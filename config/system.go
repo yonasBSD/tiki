@@ -146,7 +146,7 @@ appearance:
 	createdFiles = append(createdFiles, configPath)
 
 	// Write default workflow.yaml
-	defaultWorkflow := "plugins: []\n"
+	defaultWorkflow := "views: []\n"
 	workflowPath := DefaultWorkflowFilePath()
 	if err := os.WriteFile(workflowPath, []byte(defaultWorkflow), 0644); err != nil {
 		return fmt.Errorf("write default workflow.yaml: %w", err)

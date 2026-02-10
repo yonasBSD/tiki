@@ -129,7 +129,7 @@ func TestPluginTypeExplicit(t *testing.T) {
 func TestLoadConfiguredPlugins_WorkflowFile(t *testing.T) {
 	// create a temp directory with a workflow.yaml
 	tmpDir := t.TempDir()
-	workflowContent := `plugins:
+	workflowContent := `views:
   - name: TestBoard
     key: "F5"
     lanes:
@@ -200,7 +200,7 @@ func TestLoadConfiguredPlugins_NoWorkflowFile(t *testing.T) {
 
 func TestLoadConfiguredPlugins_InvalidPlugin(t *testing.T) {
 	tmpDir := t.TempDir()
-	workflowContent := `plugins:
+	workflowContent := `views:
   - name: Valid
     key: "V"
     lanes:

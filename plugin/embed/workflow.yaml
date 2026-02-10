@@ -1,4 +1,4 @@
-plugins:
+views:
   - name: Kanban
     foreground: "#87ceeb"
     background: "#25496a"
