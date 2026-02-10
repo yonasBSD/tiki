@@ -27,11 +27,9 @@ func (s *TikiStore) GetTasksByStatus(status taskpkg.Status) []*taskpkg.Task {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	targetPane := taskpkg.StatusPane(status)
-
 	var tasks []*taskpkg.Task
 	for _, t := range s.tasks {
-		if taskpkg.StatusPane(t.Status) == targetPane {
+		if t.Status == status {
 			tasks = append(tasks, t)
 		}
 	}

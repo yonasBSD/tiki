@@ -17,15 +17,14 @@ const (
 type statusInfo struct {
 	label string
 	emoji string
-	pane  Status
 }
 
 var statuses = map[Status]statusInfo{
-	StatusBacklog:    {label: "Backlog", emoji: "📥", pane: StatusBacklog},
-	StatusReady:      {label: "Ready", emoji: "📋", pane: StatusReady},
-	StatusInProgress: {label: "In Progress", emoji: "⚙️", pane: StatusInProgress},
-	StatusReview:     {label: "Review", emoji: "👀", pane: StatusReview},
-	StatusDone:       {label: "Done", emoji: "✅", pane: StatusDone},
+	StatusBacklog:    {label: "Backlog", emoji: "📥"},
+	StatusReady:      {label: "Ready", emoji: "📋"},
+	StatusInProgress: {label: "In Progress", emoji: "⚙️"},
+	StatusReview:     {label: "Review", emoji: "👀"},
+	StatusDone:       {label: "Done", emoji: "✅"},
 }
 
 func normalizeStatusKey(status string) string {
@@ -70,13 +69,6 @@ func StatusToString(status Status) string {
 		return string(status)
 	}
 	return string(StatusBacklog)
-}
-
-func StatusPane(status Status) Status {
-	if info, ok := statuses[status]; ok && info.pane != "" {
-		return info.pane
-	}
-	return StatusBacklog
 }
 
 func StatusEmoji(status Status) string {

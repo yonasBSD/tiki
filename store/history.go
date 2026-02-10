@@ -260,8 +260,7 @@ func parseStatusFromContent(content string) (task.Status, error) {
 }
 
 func isActiveStatus(status task.Status) bool {
-	pane := task.StatusPane(status)
-	return pane == task.StatusReady || pane == task.StatusInProgress || pane == task.StatusReview
+	return status == task.StatusReady || status == task.StatusInProgress || status == task.StatusReview
 }
 
 func deriveTaskID(fileName string) string {

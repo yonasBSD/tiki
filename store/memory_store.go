@@ -160,11 +160,9 @@ func (s *InMemoryStore) GetTasksByStatus(status task.Status) []*task.Task {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	targetPane := task.StatusPane(status)
-
 	var tasks []*task.Task
 	for _, t := range s.tasks {
-		if task.StatusPane(t.Status) == targetPane {
+		if t.Status == status {
 			tasks = append(tasks, t)
 		}
 	}
