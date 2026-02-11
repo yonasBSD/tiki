@@ -3,25 +3,6 @@
 tiki TUI app is much like a lego - everything is a customizable view. Here is, for example,
 how Backlog is defined:
 
-```text
-        name: Backlog
-        foreground: "#5fff87"
-        background: "#005f00"
-        key: "F3"
-        lanes:
-          - name: Backlog
-            columns: 4
-            filter: status = 'backlog'
-        actions:
-          - key: "b"
-            label: "Add to board"
-            action: status = 'ready'
-        sort: Priority, ID
-```
-that translates to - show all tikis in the status `backlog`, sort by priority and then by ID arranged visually in 4 columns in a single lane. 
-The `actions` section defines a keyboard shortcut `b` that moves the selected tiki to the board by setting its status to `ready`
-You define the name, caption colors, hotkey, tiki filter and sorting. Save this into a `workflow.yaml` file in the config directory:
-
 ```yaml
 views:
   - name: Backlog
@@ -39,6 +20,9 @@ views:
     sort: Priority, ID
 ```
 
+that translates to - show all tikis in the status `backlog`, sort by priority and then by ID arranged visually in 4 columns in a single lane. 
+The `actions` section defines a keyboard shortcut `b` that moves the selected tiki to the board by setting its status to `ready`
+You define the name, caption colors, hotkey, tiki filter and sorting. Save this into a `workflow.yaml` file in the config directory
 
 Likewise the documentation is just a plugin:
 

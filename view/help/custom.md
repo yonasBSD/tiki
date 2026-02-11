@@ -6,42 +6,38 @@ To go forward press `Right` arrow or `Alt-Right`
 tiki TUI app is much like a lego - everything is a customizable view. Here is, for example,
 how Backlog is defined:
 
-```text
-        name: Backlog
-        foreground: "#5fff87"
-        background: "#005f00"
-        key: "F3"
-        lanes:
-          - name: Backlog
-            columns: 4
-            filter: status = 'backlog'
-        actions:
-          - key: "b"
-            label: "Add to board"
-            action: status = 'ready'
-        sort: Priority, ID
+```yaml
+views:
+  - name: Backlog
+    foreground: "#5fff87"
+    background: "#0b3d2e"
+    key: "F3"
+    lanes:
+      - name: Backlog
+        columns: 4
+        filter: status = 'backlog' and type != 'epic'
+    actions:
+      - key: "b"
+        label: "Add to board"
+        action: status = 'ready'
+    sort: Priority, ID
 ```
 that translates to - show all tikis in the status `backlog`, sort by priority and then by ID arranged visually in 4 columns in a single lane. 
 The `actions` section defines a keyboard shortcut `b` that moves the selected tiki to the board by setting its status to `ready`
-You define the name, caption colors, hotkey, tiki filter and sorting. Save this into a yaml file and add this line:
+You define the name, caption colors, hotkey, tiki filter and sorting. Save this into a `workflow.yaml` file in the config directory
 
-```text
-        plugins:
-            - file: my-plugin.yaml
-```
-
-to the `config.yaml` file in the config directory
 
 Likewise the documentation is just a plugin:
 
-```text
-        name: Documentation
-        type: doki
-        fetcher: file
-        url: "index.md"
-        foreground: "#ff9966"
-        background: "#993300"
-        key: "F1"
+```yaml
+views:
+  - name: Docs
+    type: doki
+    fetcher: file
+    url: "index.md"
+    foreground: "#ff9966"
+    background: "#2b3a42"
+    key: "F2"
 ```
 
 that translates to - show `index.md` file located under `.doc/doki`
@@ -101,8 +97,7 @@ Each action has:
 - `action` - an action expression (same syntax as lane actions, see below)
 
 When the shortcut key is pressed, the action is applied to the currently selected tiki. 
-For example, pressing `b` in the Backlog plugin changes the selected tiki's status to `ready`, 
-effectively moving it to the board.
+For example, pressing `b` in the Backlog plugin changes the selected tiki's status to `ready`, effectively moving it to the board.
 
 ## Action expression
 
@@ -152,7 +147,7 @@ You can filter on these task fields:
 - `createdAt` - Creation timestamp
 - `updatedAt` - Last update timestamp
 
-All string comparisons are case-insensitive. 
+All string comparisons are case-insensitive.
 
 ### Operators
 
