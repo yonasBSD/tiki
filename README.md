@@ -60,6 +60,8 @@ tiki --version
 
 ### Markdown viewer
 
+<img src=".doc/doki/doc/markdown-viewer.gif" alt="Markdown viewer demo" width="600">
+
 `tiki my-markdownfile` to view, edit and navigate markdown files in terminal.
 All vim-like pager commands are supported in addition to:
 - `Tab/Enter` to select and load a link in the document
