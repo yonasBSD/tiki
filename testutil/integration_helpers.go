@@ -193,20 +193,6 @@ func (ta *TestApp) SendKey(key tcell.Key, ch rune, mod tcell.ModMask) {
 	ta.Draw()
 }
 
-// GetCell extracts the rune and style at a specific screen position
-func (ta *TestApp) GetCell(x, y int) (rune, tcell.Style) {
-	contents, width, _ := ta.Screen.GetContents()
-	idx := y*width + x
-	if idx >= len(contents) {
-		return ' ', tcell.StyleDefault
-	}
-	cell := contents[idx]
-	if len(cell.Runes) > 0 {
-		return cell.Runes[0], cell.Style
-	}
-	return ' ', cell.Style
-}
-
 // GetTextAt extracts text from a screen region starting at (x, y) with given width
 func (ta *TestApp) GetTextAt(x, y, width int) string {
 	contents, screenWidth, _ := ta.Screen.GetContents()

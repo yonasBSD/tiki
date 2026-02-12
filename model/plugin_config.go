@@ -76,13 +76,6 @@ func (pc *PluginConfig) SetLaneLayout(columns []int) {
 	}
 }
 
-// GetLaneCount returns the number of lanes.
-func (pc *PluginConfig) GetLaneCount() int {
-	pc.mu.RLock()
-	defer pc.mu.RUnlock()
-	return len(pc.laneColumns)
-}
-
 // GetSelectedLane returns the selected lane index.
 func (pc *PluginConfig) GetSelectedLane() int {
 	pc.mu.RLock()

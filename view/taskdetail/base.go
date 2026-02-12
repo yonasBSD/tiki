@@ -53,11 +53,6 @@ func (b *Base) GetPrimitive() tview.Primitive {
 	return b.root
 }
 
-// GetTaskID returns the task being displayed
-func (b *Base) GetTaskID() string {
-	return b.taskID
-}
-
 // SetFallbackTask sets a task to render when it does not yet exist in the store (draft mode)
 func (b *Base) SetFallbackTask(task *taskpkg.Task) {
 	b.fallbackTask = task

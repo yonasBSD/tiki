@@ -25,17 +25,11 @@ type Store interface {
 	// Returns error if save fails (IO error, ErrConflict).
 	UpdateTask(task *task.Task) error
 
-	// UpdateStatus changes a task's status (with validation)
-	UpdateStatus(taskID string, newStatus task.Status) bool
-
 	// DeleteTask removes a task from the store
 	DeleteTask(id string)
 
 	// GetAllTasks returns all tasks
 	GetAllTasks() []*task.Task
-
-	// GetTasksByStatus returns tasks filtered by status
-	GetTasksByStatus(status task.Status) []*task.Task
 
 	// Search searches tasks with optional filter function.
 	// query: case-insensitive search term (searches task titles)

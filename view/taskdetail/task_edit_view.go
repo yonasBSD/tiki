@@ -33,7 +33,6 @@ type TaskEditView struct {
 	titleEditing       bool
 	descTextArea       *tview.TextArea
 	descEditing        bool
-	isEditing          bool
 	statusSelectList   *component.EditSelectList
 	typeSelectList     *component.EditSelectList
 	priorityInput      *component.IntEditSelect
@@ -72,7 +71,6 @@ func NewTaskEditView(taskStore store.Store, taskID string, renderer renderer.Mar
 		focusedField: model.EditFieldTitle,
 		titleEditing: true,
 		descEditing:  true,
-		isEditing:    true,
 	}
 
 	ev.build()
@@ -420,16 +418,6 @@ func (ev *TaskEditView) ExitFullscreen() {
 	if ev.onFullscreenChange != nil {
 		ev.onFullscreenChange(false)
 	}
-}
-
-// SetEditing sets the editing state
-func (ev *TaskEditView) SetEditing(editing bool) {
-	ev.isEditing = editing
-}
-
-// IsEditing returns whether the view is currently in edit mode
-func (ev *TaskEditView) IsEditing() bool {
-	return ev.isEditing
 }
 
 // ShowTitleEditor displays the title input field

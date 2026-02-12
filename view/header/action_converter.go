@@ -31,28 +31,6 @@ func convertHeaderActions(actions []model.HeaderAction) []controller.Action {
 	return result
 }
 
-// extractViewActions extracts view-specific actions from a registry,
-// filtering out global actions and plugin actions (identified by "plugin:" prefix).
-func extractViewActions(registry *controller.ActionRegistry, globalIDs map[controller.ActionID]bool) []controller.Action {
-	var viewActions []controller.Action
-	seen := make(map[controller.ActionID]bool)
-
-	for _, action := range registry.GetHeaderActions() {
-		// skip if this is a global action or duplicate
-		if globalIDs[action.ID] || seen[action.ID] {
-			continue
-		}
-		// skip plugin actions (they're handled separately)
-		if strings.HasPrefix(string(action.ID), "plugin:") {
-			continue
-		}
-		seen[action.ID] = true
-		viewActions = append(viewActions, action)
-	}
-
-	return viewActions
-}
-
 // extractViewActionsFromModel extracts view-specific actions from model.HeaderAction slice,
 // filtering out global actions and plugin actions.
 func extractViewActionsFromModel(

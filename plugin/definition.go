@@ -10,8 +10,6 @@ import (
 type Plugin interface {
 	GetName() string
 	GetActivationKey() (tcell.Key, rune, tcell.ModMask)
-	GetForeground() tcell.Color
-	GetBackground() tcell.Color
 	GetFilePath() string
 	GetConfigIndex() int
 	GetType() string
@@ -38,14 +36,6 @@ func (p *BasePlugin) GetName() string {
 
 func (p *BasePlugin) GetActivationKey() (tcell.Key, rune, tcell.ModMask) {
 	return p.Key, p.Rune, p.Modifier
-}
-
-func (p *BasePlugin) GetForeground() tcell.Color {
-	return p.Foreground
-}
-
-func (p *BasePlugin) GetBackground() tcell.Color {
-	return p.Background
 }
 
 func (p *BasePlugin) GetFilePath() string {

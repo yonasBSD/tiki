@@ -167,10 +167,6 @@ func (h *TaskHistory) Build() error {
 	return nil
 }
 
-func (h *TaskHistory) Transitions() map[string][]StatusChange {
-	return h.transitions
-}
-
 func (h *TaskHistory) Burndown() []BurndownPoint {
 	if h.windowStart.IsZero() {
 		return nil

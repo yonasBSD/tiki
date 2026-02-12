@@ -389,65 +389,6 @@ func (tc *TaskController) handleCloneTask() bool {
 	return true
 }
 
-// SaveTaskDetails persists edited task fields in a single update
-func (tc *TaskController) SaveTaskDetails(newTitle, newDescription string) bool {
-	if tc.currentTaskID == "" {
-		return false
-	}
-
-	task := tc.taskStore.GetTask(tc.currentTaskID)
-
-	// new task creation flow using draft (not yet persisted)
-	if task == nil && tc.draftTask != nil && tc.draftTask.ID == tc.currentTaskID {
-		title := strings.TrimSpace(newTitle)
-		if title == "" {
-			return false
-		}
-
-		draft := tc.draftTask
-		draft.Title = title
-		draft.Description = newDescription
-		now := time.Now()
-		if draft.CreatedAt.IsZero() {
-			draft.CreatedAt = now
-		}
-		// Note: UpdatedAt will be computed after save based on file mtime
-
-		setAuthorFromGit(draft, tc.taskStore)
-
-		if err := tc.taskStore.CreateTask(draft); err != nil {
-			slog.Error("failed to create task from draft", "error", err)
-			// Don't clear draft on error - let user retry
-			return false
-		}
-
-		tc.draftTask = nil
-		return true
-	}
-
-	if task == nil {
-		return false
-	}
-
-	updated := false
-
-	if task.Title != newTitle {
-		task.Title = newTitle
-		updated = true
-	}
-
-	if task.Description != newDescription {
-		task.Description = newDescription
-		updated = true
-	}
-
-	if updated {
-		_ = tc.taskStore.UpdateTask(task)
-	}
-
-	return true
-}
-
 // GetCurrentTask returns the task being viewed or edited.
 // Returns nil if no task is currently active.
 func (tc *TaskController) GetCurrentTask() *taskpkg.Task {

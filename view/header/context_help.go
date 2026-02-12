@@ -46,33 +46,6 @@ func NewContextHelpWidget() *ContextHelpWidget {
 	}
 }
 
-// SetActions updates the display with the given action registry (backward compatible)
-// Returns the calculated visible width of the rendered content
-func (chw *ContextHelpWidget) SetActions(registry *controller.ActionRegistry) int {
-	if registry == nil {
-		chw.SetText("")
-		chw.width = 0
-		return 0
-	}
-
-	// Section 1: Global actions (always present)
-	globalRegistry := controller.DefaultGlobalActions()
-	var globalActions []controller.Action
-	globalIDs := make(map[controller.ActionID]bool)
-	for _, action := range globalRegistry.GetHeaderActions() {
-		globalActions = append(globalActions, action)
-		globalIDs[action.ID] = true
-	}
-
-	// Section 2: Plugin "go to" actions (from centralized registry)
-	pluginActions := controller.GetPluginActions().GetHeaderActions()
-
-	// Section 3: View-specific actions (exclude globals and plugin actions)
-	viewActions := extractViewActions(registry, globalIDs)
-
-	return chw.renderActionsGrid(globalActions, pluginActions, viewActions)
-}
-
 // GetWidth returns the current calculated width of the content
 func (chw *ContextHelpWidget) GetWidth() int {
 	return chw.width

@@ -96,11 +96,6 @@ func (pc *PluginController) GetPluginName() string {
 	return pc.pluginDef.Name
 }
 
-// GetPluginDefinition returns the plugin definition
-func (pc *PluginController) GetPluginDefinition() *plugin.TikiPlugin {
-	return pc.pluginDef
-}
-
 // HandleAction processes a plugin action
 func (pc *PluginController) HandleAction(actionID ActionID) bool {
 	switch actionID {

@@ -80,39 +80,6 @@ func (s *TikiStore) UpdateTask(task *taskpkg.Task) error {
 	return nil
 }
 
-// UpdateStatus changes a task's status
-func (s *TikiStore) UpdateStatus(taskID string, newStatus taskpkg.Status) bool {
-	s.mu.Lock()
-
-	taskID = normalizeTaskID(taskID)
-	task, exists := s.tasks[taskID]
-	if !exists {
-		s.mu.Unlock()
-		return false
-	}
-
-	oldStatus := task.Status // Capture old status for logging
-
-	if task.Status == newStatus {
-		s.mu.Unlock()
-		slog.Debug("task status already matches new status, no update needed", "task_id", taskID, "status", newStatus)
-		return false
-	}
-
-	task.Status = newStatus
-	if err := s.saveTask(task); err != nil {
-		slog.Error("failed to save task after status update", "task_id", taskID, "old_status", oldStatus, "new_status", newStatus, "error", err)
-		// Consider reverting task.Status if save fails
-		s.mu.Unlock()
-		return false
-	}
-	s.mu.Unlock()
-	slog.Info("task status updated", "task_id", taskID, "old_status", oldStatus, "new_status", newStatus)
-	// notify outside lock to prevent deadlock when listeners call back into store
-	s.notifyListeners()
-	return true
-}
-
 // DeleteTask removes a task and its file
 func (s *TikiStore) DeleteTask(id string) {
 	s.mu.Lock()

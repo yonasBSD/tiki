@@ -1,7 +1,6 @@
 package tikistore
 
 import (
-	"log/slog"
 	"sort"
 	"strings"
 
@@ -16,22 +15,6 @@ func (s *TikiStore) GetAllTasks() []*taskpkg.Task {
 	tasks := make([]*taskpkg.Task, 0, len(s.tasks))
 	for _, t := range s.tasks {
 		tasks = append(tasks, t)
-	}
-	sortTasks(tasks)
-	return tasks
-}
-
-// GetTasksByStatus returns tasks filtered by status, sorted by priority then title
-func (s *TikiStore) GetTasksByStatus(status taskpkg.Status) []*taskpkg.Task {
-	slog.Debug("retrieving tasks by status", "status", status)
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
-	var tasks []*taskpkg.Task
-	for _, t := range s.tasks {
-		if t.Status == status {
-			tasks = append(tasks, t)
-		}
 	}
 	sortTasks(tasks)
 	return tasks

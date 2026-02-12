@@ -20,9 +20,6 @@ type StatCollector interface {
 
 	// RemoveStat removes a stat by key. Returns true if stat existed.
 	RemoveStat(key string) bool
-
-	// GetStat retrieves current value for a stat. Returns empty string if not found.
-	GetStat(key string) string
 }
 
 // statEntry represents a single stat in the widget
@@ -104,17 +101,6 @@ func (sw *StatsWidget) RemoveStat(key string) bool {
 	sw.rebuildSorted()
 	sw.update()
 	return true
-}
-
-// GetStat retrieves current value for a stat. Returns empty string if not found.
-func (sw *StatsWidget) GetStat(key string) string {
-	sw.mu.RLock()
-	defer sw.mu.RUnlock()
-
-	if entry, exists := sw.stats[key]; exists {
-		return entry.value
-	}
-	return ""
 }
 
 // GetKeys returns all current stat keys

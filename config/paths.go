@@ -397,12 +397,6 @@ func FindWorkflowFile() string {
 	return files[0]
 }
 
-// DefaultWorkflowFilePath returns the default path for creating a new workflow.yaml
-// (in the project config dir, i.e. .doc/)
-func DefaultWorkflowFilePath() string {
-	return filepath.Join(mustGetPathManager().ProjectConfigDir(), defaultWorkflowFilename)
-}
-
 // GetTemplateFile returns the path to the user's custom new.md template
 func GetTemplateFile() string {
 	return mustGetPathManager().TemplateFile()

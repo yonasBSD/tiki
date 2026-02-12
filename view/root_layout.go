@@ -226,14 +226,6 @@ func (rl *RootLayout) GetContentView() controller.View {
 	return rl.contentView
 }
 
-// RecomputeHeaderVisibility recomputes header visibility based on current view state.
-// Call this when fullscreen state changes on a view not managed by RootLayout.
-func (rl *RootLayout) RecomputeHeaderVisibility() {
-	if rl.contentView != nil {
-		rl.recomputeHeaderVisibility(rl.contentView)
-	}
-}
-
 // OnFocus delegates to the content view
 func (rl *RootLayout) OnFocus() {
 	if rl.contentView != nil {

@@ -104,37 +104,6 @@ func (s *InMemoryStore) UpdateTask(task *task.Task) error {
 	return nil
 }
 
-// UpdateStatus changes a task's status (with validation)
-func (s *InMemoryStore) UpdateStatus(taskID string, newStatus task.Status) bool {
-	s.mu.Lock()
-
-	taskID = normalizeTaskID(taskID)
-	task, exists := s.tasks[taskID]
-	if !exists {
-		s.mu.Unlock()
-		return false
-	}
-
-	// validate transition (could add more rules here)
-	if !isValidTransition(task.Status, newStatus) {
-		s.mu.Unlock()
-		return false
-	}
-
-	task.Status = newStatus
-	task.UpdatedAt = time.Now()
-	s.mu.Unlock()
-	s.notifyListeners()
-	return true
-}
-
-// isValidTransition checks if a status transition is allowed
-func isValidTransition(from, to task.Status) bool {
-	// for now, allow all transitions
-	// can add business rules here (e.g., can't go from done to backlog)
-	return from != to
-}
-
 // DeleteTask removes a task from the store
 func (s *InMemoryStore) DeleteTask(id string) {
 	s.mu.Lock()
@@ -151,20 +120,6 @@ func (s *InMemoryStore) GetAllTasks() []*task.Task {
 	tasks := make([]*task.Task, 0, len(s.tasks))
 	for _, t := range s.tasks {
 		tasks = append(tasks, t)
-	}
-	return tasks
-}
-
-// GetTasksByStatus returns tasks filtered by status
-func (s *InMemoryStore) GetTasksByStatus(status task.Status) []*task.Task {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
-	var tasks []*task.Task
-	for _, t := range s.tasks {
-		if t.Status == status {
-			tasks = append(tasks, t)
-		}
 	}
 	return tasks
 }

@@ -148,21 +148,6 @@ func GetConfig() *Config {
 	return appConfig
 }
 
-// GetString is a convenience method to get a string value from config
-func GetString(key string) string {
-	return viper.GetString(key)
-}
-
-// GetBool is a convenience method to get a boolean value from config
-func GetBool(key string) bool {
-	return viper.GetBool(key)
-}
-
-// GetInt is a convenience method to get an integer value from config
-func GetInt(key string) int {
-	return viper.GetInt(key)
-}
-
 // workflowFileData represents the YAML structure of workflow.yaml for read-modify-write.
 // kept in config package to avoid import cycle with plugin package.
 type workflowFileData struct {

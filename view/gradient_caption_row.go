@@ -13,7 +13,6 @@ import (
 type GradientCaptionRow struct {
 	*tview.Box
 	laneNames []string
-	bgColor   tcell.Color     // original background color from plugin
 	gradient  config.Gradient // computed gradient (for truecolor/256-color terminals)
 	textColor tcell.Color
 }
@@ -23,7 +22,6 @@ func NewGradientCaptionRow(laneNames []string, bgColor tcell.Color, textColor tc
 	return &GradientCaptionRow{
 		Box:       tview.NewBox(),
 		laneNames: laneNames,
-		bgColor:   bgColor,
 		gradient:  computeCaptionGradient(bgColor),
 		textColor: textColor,
 	}

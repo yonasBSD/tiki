@@ -22,8 +22,6 @@ const (
 
 // ActionID values for task navigation and manipulation (used by plugins).
 const (
-	ActionOpenTask      ActionID = "open_task"
-	ActionMoveTask      ActionID = "move_task"
 	ActionMoveTaskLeft  ActionID = "move_task_left"
 	ActionMoveTaskRight ActionID = "move_task_right"
 	ActionNewTask       ActionID = "new_task"

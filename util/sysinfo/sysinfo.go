@@ -89,20 +89,6 @@ func NewSystemInfo() *SystemInfo {
 	return info
 }
 
-// NewSystemInfoWithScreen collects all system information including actual terminal
-// dimensions from a running screen. This requires an initialized tcell.Screen.
-func NewSystemInfoWithScreen(screen tcell.Screen) *SystemInfo {
-	info := NewSystemInfo()
-
-	// Get actual terminal dimensions
-	info.TerminalWidth, info.TerminalHeight = screen.Size()
-
-	// Get verified color support from running screen
-	info.ColorSupport, info.ColorCount = getColorSupportFromScreen(screen)
-
-	return info
-}
-
 // ToMap returns system information as a map for serialization.
 func (s *SystemInfo) ToMap() map[string]interface{} {
 	return map[string]interface{}{
@@ -232,25 +218,6 @@ func getColorSupportFromTerminfo() (string, int) {
 	}
 
 	colors := ti.Colors
-
-	switch {
-	case colors >= 16777216:
-		return "truecolor", colors
-	case colors >= 256:
-		return "256-color", colors
-	case colors >= 16:
-		return "16-color", colors
-	case colors >= 2:
-		return "monochrome", colors
-	default:
-		return "unknown", colors
-	}
-}
-
-// getColorSupportFromScreen queries color capabilities from a running tcell screen.
-// This is accurate but requires an initialized screen.
-func getColorSupportFromScreen(screen tcell.Screen) (string, int) {
-	colors := screen.Colors()
 
 	switch {
 	case colors >= 16777216:

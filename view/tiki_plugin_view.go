@@ -206,31 +206,6 @@ func (pv *PluginView) OnBlur() {
 	pv.pluginConfig.RemoveSelectionListener(pv.selectionListenerID)
 }
 
-// GetSelectedID returns the selected task ID
-func (pv *PluginView) GetSelectedID() string {
-	lane := pv.pluginConfig.GetSelectedLane()
-	tasks := pv.getLaneTasks(lane)
-	idx := pv.pluginConfig.GetSelectedIndexForLane(lane)
-	if idx >= 0 && idx < len(tasks) {
-		return tasks[idx].ID
-	}
-	return ""
-}
-
-// SetSelectedID sets the selection to a task
-func (pv *PluginView) SetSelectedID(id string) {
-	for lane := range pv.pluginDef.Lanes {
-		tasks := pv.getLaneTasks(lane)
-		for i, t := range tasks {
-			if t.ID == id {
-				pv.pluginConfig.SetSelectedLane(lane)
-				pv.pluginConfig.SetSelectedIndexForLane(lane, i)
-				return
-			}
-		}
-	}
-}
-
 // ShowSearch displays the search box and returns the primitive to focus
 func (pv *PluginView) ShowSearch() tview.Primitive {
 	if pv.searchHelper.IsVisible() {
