@@ -1,5 +1,7 @@
 # Markdown viewer
 
+![Markdown viewer demo](markdown-viewer.gif)
+
 ## Open Markdown
 `tiki` can be used as a navigable Markdown viewer. A Markdown file can be opened via:
 
