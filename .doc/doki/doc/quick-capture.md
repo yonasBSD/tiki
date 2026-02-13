@@ -1,9 +1,15 @@
 # Quick capture
 
 Create tiki tasks straight from the command line
+
 First line becomes the title. Everything after becomes the description.
 
 ## Examples
+
+### Quick capture an idea
+```bash
+echo "cool idea" | tiki
+```
 
 ### Turn a GitHub issue into a tiki task
 ```bash
